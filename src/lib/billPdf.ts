@@ -6,7 +6,7 @@ export async function generateBillPdf(bill: Bill, cages: BillCage[]): Promise<Ui
   const page = doc.addPage([400, 600]);
   const font = await doc.embedFont(StandardFonts.Helvetica);
   const bold = await doc.embedFont(StandardFonts.HelveticaBold);
-  const { width, height } = page.size();
+  const { width, height } = page.getSize();
 
   let y = height - 40;
   const left = 30;
