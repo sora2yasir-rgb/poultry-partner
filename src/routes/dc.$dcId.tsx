@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
-import { db, nowISO, nextBillNo, getCustomerBakiExcluding, todayStr } from "@/lib/db";
+import { db, nowISO, nextBillNo, getCustomerBakiExcluding, todayStr, type Customer } from "@/lib/db";
 import { PageHeader } from "@/components/app/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -185,7 +185,7 @@ function SendDialog({
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
-  customers: Awaited<ReturnType<typeof db.customers.toArray>>;
+  customers: Customer[];
   selectedCageIds: number[];
   dcId: number;
   onCreated: (billId: number) => void;
