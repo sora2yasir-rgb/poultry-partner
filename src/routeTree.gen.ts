@@ -9,9 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as DcRouteImport } from './routes/dc'
 import { Route as CustomersRouteImport } from './routes/customers'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DcDcIdRouteImport } from './routes/dc.$dcId'
 
+const DcRoute = DcRouteImport.update({
+  id: '/dc',
+  path: '/dc',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CustomersRoute = CustomersRouteImport.update({
   id: '/customers',
   path: '/customers',
@@ -22,35 +29,54 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DcDcIdRoute = DcDcIdRouteImport.update({
+  id: '/$dcId',
+  path: '/$dcId',
+  getParentRoute: () => DcRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/customers': typeof CustomersRoute
+  '/dc': typeof DcRouteWithChildren
+  '/dc/$dcId': typeof DcDcIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/customers': typeof CustomersRoute
+  '/dc': typeof DcRouteWithChildren
+  '/dc/$dcId': typeof DcDcIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/customers': typeof CustomersRoute
+  '/dc': typeof DcRouteWithChildren
+  '/dc/$dcId': typeof DcDcIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/customers'
+  fullPaths: '/' | '/customers' | '/dc' | '/dc/$dcId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/customers'
-  id: '__root__' | '/' | '/customers'
+  to: '/' | '/customers' | '/dc' | '/dc/$dcId'
+  id: '__root__' | '/' | '/customers' | '/dc' | '/dc/$dcId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CustomersRoute: typeof CustomersRoute
+  DcRoute: typeof DcRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/dc': {
+      id: '/dc'
+      path: '/dc'
+      fullPath: '/dc'
+      preLoaderRoute: typeof DcRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/customers': {
       id: '/customers'
       path: '/customers'
@@ -65,12 +91,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dc/$dcId': {
+      id: '/dc/$dcId'
+      path: '/$dcId'
+      fullPath: '/dc/$dcId'
+      preLoaderRoute: typeof DcDcIdRouteImport
+      parentRoute: typeof DcRoute
+    }
   }
 }
+
+interface DcRouteChildren {
+  DcDcIdRoute: typeof DcDcIdRoute
+}
+
+const DcRouteChildren: DcRouteChildren = {
+  DcDcIdRoute: DcDcIdRoute,
+}
+
+const DcRouteWithChildren = DcRoute._addFileChildren(DcRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CustomersRoute: CustomersRoute,
+  DcRoute: DcRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
