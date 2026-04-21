@@ -9,38 +9,166 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ReportsRouteImport } from './routes/reports'
+import { Route as RegisterRouteImport } from './routes/register'
+import { Route as DcRouteImport } from './routes/dc'
+import { Route as CustomersRouteImport } from './routes/customers'
+import { Route as BillsRouteImport } from './routes/bills'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DcDcIdRouteImport } from './routes/dc.$dcId'
+import { Route as BillsBillIdRouteImport } from './routes/bills.$billId'
 
+const ReportsRoute = ReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DcRoute = DcRouteImport.update({
+  id: '/dc',
+  path: '/dc',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CustomersRoute = CustomersRouteImport.update({
+  id: '/customers',
+  path: '/customers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BillsRoute = BillsRouteImport.update({
+  id: '/bills',
+  path: '/bills',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DcDcIdRoute = DcDcIdRouteImport.update({
+  id: '/$dcId',
+  path: '/$dcId',
+  getParentRoute: () => DcRoute,
+} as any)
+const BillsBillIdRoute = BillsBillIdRouteImport.update({
+  id: '/$billId',
+  path: '/$billId',
+  getParentRoute: () => BillsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/bills': typeof BillsRouteWithChildren
+  '/customers': typeof CustomersRoute
+  '/dc': typeof DcRouteWithChildren
+  '/register': typeof RegisterRoute
+  '/reports': typeof ReportsRoute
+  '/bills/$billId': typeof BillsBillIdRoute
+  '/dc/$dcId': typeof DcDcIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/bills': typeof BillsRouteWithChildren
+  '/customers': typeof CustomersRoute
+  '/dc': typeof DcRouteWithChildren
+  '/register': typeof RegisterRoute
+  '/reports': typeof ReportsRoute
+  '/bills/$billId': typeof BillsBillIdRoute
+  '/dc/$dcId': typeof DcDcIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/bills': typeof BillsRouteWithChildren
+  '/customers': typeof CustomersRoute
+  '/dc': typeof DcRouteWithChildren
+  '/register': typeof RegisterRoute
+  '/reports': typeof ReportsRoute
+  '/bills/$billId': typeof BillsBillIdRoute
+  '/dc/$dcId': typeof DcDcIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/bills'
+    | '/customers'
+    | '/dc'
+    | '/register'
+    | '/reports'
+    | '/bills/$billId'
+    | '/dc/$dcId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/bills'
+    | '/customers'
+    | '/dc'
+    | '/register'
+    | '/reports'
+    | '/bills/$billId'
+    | '/dc/$dcId'
+  id:
+    | '__root__'
+    | '/'
+    | '/bills'
+    | '/customers'
+    | '/dc'
+    | '/register'
+    | '/reports'
+    | '/bills/$billId'
+    | '/dc/$dcId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BillsRoute: typeof BillsRouteWithChildren
+  CustomersRoute: typeof CustomersRoute
+  DcRoute: typeof DcRouteWithChildren
+  RegisterRoute: typeof RegisterRoute
+  ReportsRoute: typeof ReportsRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/reports': {
+      id: '/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof ReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dc': {
+      id: '/dc'
+      path: '/dc'
+      fullPath: '/dc'
+      preLoaderRoute: typeof DcRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/customers': {
+      id: '/customers'
+      path: '/customers'
+      fullPath: '/customers'
+      preLoaderRoute: typeof CustomersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bills': {
+      id: '/bills'
+      path: '/bills'
+      fullPath: '/bills'
+      preLoaderRoute: typeof BillsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +176,50 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dc/$dcId': {
+      id: '/dc/$dcId'
+      path: '/$dcId'
+      fullPath: '/dc/$dcId'
+      preLoaderRoute: typeof DcDcIdRouteImport
+      parentRoute: typeof DcRoute
+    }
+    '/bills/$billId': {
+      id: '/bills/$billId'
+      path: '/$billId'
+      fullPath: '/bills/$billId'
+      preLoaderRoute: typeof BillsBillIdRouteImport
+      parentRoute: typeof BillsRoute
+    }
   }
 }
 
+interface BillsRouteChildren {
+  BillsBillIdRoute: typeof BillsBillIdRoute
+}
+
+const BillsRouteChildren: BillsRouteChildren = {
+  BillsBillIdRoute: BillsBillIdRoute,
+}
+
+const BillsRouteWithChildren = BillsRoute._addFileChildren(BillsRouteChildren)
+
+interface DcRouteChildren {
+  DcDcIdRoute: typeof DcDcIdRoute
+}
+
+const DcRouteChildren: DcRouteChildren = {
+  DcDcIdRoute: DcDcIdRoute,
+}
+
+const DcRouteWithChildren = DcRoute._addFileChildren(DcRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BillsRoute: BillsRouteWithChildren,
+  CustomersRoute: CustomersRoute,
+  DcRoute: DcRouteWithChildren,
+  RegisterRoute: RegisterRoute,
+  ReportsRoute: ReportsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
