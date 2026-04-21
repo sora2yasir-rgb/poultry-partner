@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as DcRouteImport } from './routes/dc'
 import { Route as CustomersRouteImport } from './routes/customers'
+import { Route as BillsRouteImport } from './routes/bills'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DcDcIdRouteImport } from './routes/dc.$dcId'
 
@@ -22,6 +23,11 @@ const DcRoute = DcRouteImport.update({
 const CustomersRoute = CustomersRouteImport.update({
   id: '/customers',
   path: '/customers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BillsRoute = BillsRouteImport.update({
+  id: '/bills',
+  path: '/bills',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -37,12 +43,14 @@ const DcDcIdRoute = DcDcIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/bills': typeof BillsRoute
   '/customers': typeof CustomersRoute
   '/dc': typeof DcRouteWithChildren
   '/dc/$dcId': typeof DcDcIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/bills': typeof BillsRoute
   '/customers': typeof CustomersRoute
   '/dc': typeof DcRouteWithChildren
   '/dc/$dcId': typeof DcDcIdRoute
@@ -50,20 +58,22 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/bills': typeof BillsRoute
   '/customers': typeof CustomersRoute
   '/dc': typeof DcRouteWithChildren
   '/dc/$dcId': typeof DcDcIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/customers' | '/dc' | '/dc/$dcId'
+  fullPaths: '/' | '/bills' | '/customers' | '/dc' | '/dc/$dcId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/customers' | '/dc' | '/dc/$dcId'
-  id: '__root__' | '/' | '/customers' | '/dc' | '/dc/$dcId'
+  to: '/' | '/bills' | '/customers' | '/dc' | '/dc/$dcId'
+  id: '__root__' | '/' | '/bills' | '/customers' | '/dc' | '/dc/$dcId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BillsRoute: typeof BillsRoute
   CustomersRoute: typeof CustomersRoute
   DcRoute: typeof DcRouteWithChildren
 }
@@ -82,6 +92,13 @@ declare module '@tanstack/react-router' {
       path: '/customers'
       fullPath: '/customers'
       preLoaderRoute: typeof CustomersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bills': {
+      id: '/bills'
+      path: '/bills'
+      fullPath: '/bills'
+      preLoaderRoute: typeof BillsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -113,9 +130,19 @@ const DcRouteWithChildren = DcRoute._addFileChildren(DcRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BillsRoute: BillsRoute,
   CustomersRoute: CustomersRoute,
   DcRoute: DcRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
