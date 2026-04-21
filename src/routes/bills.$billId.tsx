@@ -25,8 +25,8 @@ function BillDetailPage() {
   const bill = useLiveQuery(() => db.bills.get(id), [id]);
   const cages = useLiveQuery(() => db.bill_cages.where("bill_id").equals(id).toArray(), [id]);
   const customer = useLiveQuery(
-    () => (bill ? db.customers.get(bill.customer_id) : Promise.resolve(undefined)),
-    [bill?.customer_id],
+    async () => (bill ? await db.customers.get(bill.customer_id) : undefined),
+    [bill?.customer_id, bill],
   );
   const payments = useLiveQuery(() => db.payments.where("bill_id").equals(id).toArray(), [id]);
 
@@ -35,9 +35,11 @@ function BillDetailPage() {
   const [payOpen, setPayOpen] = useState(false);
 
   if (!bill) return <div className="p-6">Loading…</div>;
+  // Capture non-null bill for closures below
+  const currentBill = bill;
 
-  async function recalc(updates: Partial<typeof bill>) {
-    const merged = { ...bill, ...updates };
+  async function recalc(updates: Partial<typeof currentBill>) {
+    const merged = { ...currentBill, ...updates };
     const amount = Math.round(merged.total_weight * merged.rate);
     const prevBaki = await getCustomerBakiExcluding(merged.customer_id, merged.id);
     const grand = amount + prevBaki;
@@ -64,13 +66,13 @@ function BillDetailPage() {
   }
 
   async function handlePdf() {
-    const bytes = await generateBillPdf(bill, cages ?? []);
-    downloadPdf(bytes, `Bill-${bill.bill_no}-${bill.customer_name.replace(/\s+/g, "_")}.pdf`);
+    const bytes = await generateBillPdf(currentBill, cages ?? []);
+    downloadPdf(bytes, `Bill-${currentBill.bill_no}-${currentBill.customer_name.replace(/\s+/g, "_")}.pdf`);
   }
 
   async function handleShare() {
     try {
-      await shareOnWhatsApp({ bill, cages: cages ?? [], phone: customer?.phone });
+      await shareOnWhatsApp({ bill: currentBill, cages: cages ?? [], phone: customer?.phone });
     } catch (e) {
       console.error(e);
       toast.error("Share failed");
@@ -206,8 +208,8 @@ function BillDetailPage() {
         customerId={bill.customer_id}
         defaultDate={bill.date}
         onSaved={async (amt, mode) => {
-          const newCash = bill.paid_cash + (mode === "cash" ? amt : 0);
-          const newOnline = bill.paid_online + (mode === "online" ? amt : 0);
+          const newCash = currentBill.paid_cash + (mode === "cash" ? amt : 0);
+          const newOnline = currentBill.paid_online + (mode === "online" ? amt : 0);
           await recalc({ paid_cash: newCash, paid_online: newOnline });
           toast.success("Payment recorded");
         }}
