@@ -102,7 +102,13 @@ const navLinks = [
   { href: "#faq", label: "FAQ" },
 ];
 
-function MarketingHeader() {
+function MarketingHeader({
+  waNumber,
+  setWaNumber,
+}: {
+  waNumber: string;
+  setWaNumber: (v: string) => void;
+}) {
   const [open, setOpen] = useState(false);
   return (
     <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur">
@@ -124,12 +130,16 @@ function MarketingHeader() {
           ))}
         </nav>
         <div className="hidden md:flex items-center gap-2">
+          <WhatsAppSettings waNumber={waNumber} setWaNumber={setWaNumber} />
           <Button asChild variant="ghost"><Link to="/app">Sign in</Link></Button>
           <Button asChild><Link to="/app">Open app <ArrowRight className="ml-1 h-4 w-4" /></Link></Button>
         </div>
-        <button className="md:hidden p-2" onClick={() => setOpen((v) => !v)} aria-label="Menu">
-          <Menu className="h-5 w-5" />
-        </button>
+        <div className="md:hidden flex items-center gap-1">
+          <WhatsAppSettings waNumber={waNumber} setWaNumber={setWaNumber} />
+          <button className="p-2" onClick={() => setOpen((v) => !v)} aria-label="Menu">
+            <Menu className="h-5 w-5" />
+          </button>
+        </div>
       </div>
       {open && (
         <div className="md:hidden border-t bg-background">
