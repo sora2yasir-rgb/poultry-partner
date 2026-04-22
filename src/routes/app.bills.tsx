@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { fmt, fmtInt, fmtMoney, fmtDate } from "@/lib/format";
 import { Receipt } from "lucide-react";
 
-export const Route = createFileRoute("/bills")({
+export const Route = createFileRoute("/app/bills")({
   head: () => ({
     meta: [
       { title: "Bills — Murgi Hisaab" },
@@ -50,7 +50,7 @@ function BillsPage() {
                 {bills?.map((b) => (
                   <TableRow key={b.id}>
                     <TableCell>
-                      <Link to="/bills/$billId" params={{ billId: String(b.id) }} className="font-medium hover:underline">
+                      <Link to="/app/bills/$billId" params={{ billId: String(b.id) }} className="font-medium hover:underline">
                         #{b.bill_no}
                       </Link>
                     </TableCell>

@@ -13,7 +13,7 @@ import { fmt, fmtInt, fmtDate } from "@/lib/format";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
-export const Route = createFileRoute("/dc")({
+export const Route = createFileRoute("/app/dc")({
   head: () => ({
     meta: [
       { title: "DC Register — Murgi Hisaab" },
@@ -113,7 +113,7 @@ function DCListPage() {
             onCancel={() => setReview(null)}
             onSaved={(id) => {
               setReview(null);
-              navigate({ to: "/dc/$dcId", params: { dcId: String(id) } });
+              navigate({ to: "/app/dc/$dcId", params: { dcId: String(id) } });
             }}
           />
         )}
@@ -163,7 +163,7 @@ function DCRow({ dcId }: { dcId: number }) {
   return (
     <TableRow>
       <TableCell className="font-medium">
-        <Link to="/dc/$dcId" params={{ dcId: String(dc.id) }} className="hover:underline">
+        <Link to="/app/dc/$dcId" params={{ dcId: String(dc.id) }} className="hover:underline">
           {dc.order_no || `DC#${dc.id}`}
         </Link>
       </TableCell>
@@ -175,7 +175,7 @@ function DCRow({ dcId }: { dcId: number }) {
       <TableCell className="text-right">{fmt(totalWeight)}</TableCell>
       <TableCell className="text-right">
         <Button asChild size="sm" variant="ghost">
-          <Link to="/dc/$dcId" params={{ dcId: String(dc.id) }}>Open</Link>
+          <Link to="/app/dc/$dcId" params={{ dcId: String(dc.id) }}>Open</Link>
         </Button>
       </TableCell>
     </TableRow>

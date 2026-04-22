@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { fmt, fmtInt, fmtMoney } from "@/lib/format";
 
-export const Route = createFileRoute("/reports")({
+export const Route = createFileRoute("/app/reports")({
   head: () => ({
     meta: [
       { title: "Reports — Murgi Hisaab" },

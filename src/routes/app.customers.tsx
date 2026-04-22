@@ -12,7 +12,7 @@ import { Plus, Pencil, Trash2 } from "lucide-react";
 import { fmtMoney } from "@/lib/format";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/customers")({
+export const Route = createFileRoute("/app/customers")({
   head: () => ({
     meta: [
       { title: "Customers — Murgi Hisaab" },
