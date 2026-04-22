@@ -1,6 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   FileText,
   Receipt,
@@ -14,8 +17,9 @@ import {
   ArrowRight,
   Menu,
   MessageCircle,
+  Settings,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import heroImg from "@/assets/marketing-hero.jpg";
 
 export const Route = createFileRoute("/")({
@@ -39,11 +43,46 @@ export const Route = createFileRoute("/")({
   component: LandingPage,
 });
 
+const WA_STORAGE_KEY = "mh:waNumber";
+const WA_DEMO_MESSAGE = "Hi, I'd like a demo of Murgi Hisaab";
+
+function sanitizeWaNumber(input: string): string {
+  // Keep digits only; WhatsApp wa.me expects country code + number, no +.
+  return input.replace(/\D/g, "").slice(0, 15);
+}
+
+function useWhatsAppNumber() {
+  const [number, setNumber] = useState<string>("");
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(WA_STORAGE_KEY);
+      if (stored) setNumber(sanitizeWaNumber(stored));
+    } catch {
+      // ignore
+    }
+  }, []);
+  const update = (val: string) => {
+    const clean = sanitizeWaNumber(val);
+    setNumber(clean);
+    try {
+      if (clean) localStorage.setItem(WA_STORAGE_KEY, clean);
+      else localStorage.removeItem(WA_STORAGE_KEY);
+    } catch {
+      // ignore
+    }
+  };
+  const link =
+    (number ? `https://wa.me/${number}` : "https://wa.me/") +
+    `?text=${encodeURIComponent(WA_DEMO_MESSAGE)}`;
+  return { number, setNumber: update, link };
+}
+
 function LandingPage() {
+  const wa = useWhatsAppNumber();
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <MarketingHeader />
-      <Hero />
+      <MarketingHeader waNumber={wa.number} setWaNumber={wa.setNumber} />
+      <Hero waLink={wa.link} />
       <LogoStrip />
       <Features />
       <HowItWorks />
@@ -63,7 +102,13 @@ const navLinks = [
   { href: "#faq", label: "FAQ" },
 ];
 
-function MarketingHeader() {
+function MarketingHeader({
+  waNumber,
+  setWaNumber,
+}: {
+  waNumber: string;
+  setWaNumber: (v: string) => void;
+}) {
   const [open, setOpen] = useState(false);
   return (
     <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur">
@@ -85,12 +130,16 @@ function MarketingHeader() {
           ))}
         </nav>
         <div className="hidden md:flex items-center gap-2">
+          <WhatsAppSettings waNumber={waNumber} setWaNumber={setWaNumber} />
           <Button asChild variant="ghost"><Link to="/app">Sign in</Link></Button>
           <Button asChild><Link to="/app">Open app <ArrowRight className="ml-1 h-4 w-4" /></Link></Button>
         </div>
-        <button className="md:hidden p-2" onClick={() => setOpen((v) => !v)} aria-label="Menu">
-          <Menu className="h-5 w-5" />
-        </button>
+        <div className="md:hidden flex items-center gap-1">
+          <WhatsAppSettings waNumber={waNumber} setWaNumber={setWaNumber} />
+          <button className="p-2" onClick={() => setOpen((v) => !v)} aria-label="Menu">
+            <Menu className="h-5 w-5" />
+          </button>
+        </div>
       </div>
       {open && (
         <div className="md:hidden border-t bg-background">
@@ -108,7 +157,71 @@ function MarketingHeader() {
   );
 }
 
-function Hero() {
+function WhatsAppSettings({
+  waNumber,
+  setWaNumber,
+}: {
+  waNumber: string;
+  setWaNumber: (v: string) => void;
+}) {
+  const [draft, setDraft] = useState(waNumber);
+  useEffect(() => setDraft(waNumber), [waNumber]);
+  const valid = draft.length === 0 || (draft.length >= 8 && draft.length <= 15);
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button variant="ghost" size="icon" aria-label="WhatsApp settings">
+          <Settings className="h-4 w-4" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent align="end" className="w-72">
+        <div className="space-y-3">
+          <div>
+            <div className="text-sm font-semibold">WhatsApp number</div>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Country code + number, digits only (e.g. 919876543210).
+            </p>
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="wa-number" className="text-xs">Number</Label>
+            <Input
+              id="wa-number"
+              inputMode="numeric"
+              placeholder="919876543210"
+              value={draft}
+              maxLength={15}
+              onChange={(e) => setDraft(sanitizeWaNumber(e.target.value))}
+            />
+            {!valid && (
+              <p className="text-xs text-destructive">Enter 8–15 digits including country code.</p>
+            )}
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setDraft("");
+                setWaNumber("");
+              }}
+            >
+              Clear
+            </Button>
+            <Button
+              size="sm"
+              disabled={!valid}
+              onClick={() => setWaNumber(draft)}
+            >
+              Save
+            </Button>
+          </div>
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+function Hero({ waLink }: { waLink: string }) {
   return (
     <section className="relative overflow-hidden">
       <div className="absolute inset-0 bg-[image:var(--gradient-hero)] opacity-70" aria-hidden />
@@ -135,11 +248,7 @@ function Hero() {
               variant="outline"
               className="border-[#25D366] text-[#128C7E] hover:bg-[#25D366]/10 hover:text-[#128C7E]"
             >
-              <a
-                href="https://wa.me/919999999999?text=Hi%2C%20I%27d%20like%20a%20demo%20of%20Murgi%20Hisaab"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <a href={waLink} target="_blank" rel="noopener noreferrer">
                 <MessageCircle className="mr-1 h-4 w-4" /> Chat on WhatsApp
               </a>
             </Button>
