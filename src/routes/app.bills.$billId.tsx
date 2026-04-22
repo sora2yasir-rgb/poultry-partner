@@ -13,6 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ArrowLeft, Download, Share2, IndianRupee } from "lucide-react";
 import { fmt, fmtInt, fmtMoney, fmtDate } from "@/lib/format";
 import { generateBillPdf, downloadPdf, shareOnWhatsApp } from "@/lib/billPdf";
+import { getStoredWaNumber } from "@/lib/waNumber";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/app/bills/$billId")({
@@ -79,6 +80,20 @@ function BillDetailPage() {
     }
   }
 
+  async function handleSendToConfigured() {
+    const configured = getStoredWaNumber();
+    if (!configured) {
+      toast.error("No WhatsApp number configured. Set it on the homepage.");
+      return;
+    }
+    try {
+      await shareOnWhatsApp({ bill: currentBill, cages: cages ?? [], phone: configured });
+    } catch (e) {
+      console.error(e);
+      toast.error("Send failed");
+    }
+  }
+
   return (
     <div>
       <PageHeader
@@ -88,7 +103,8 @@ function BillDetailPage() {
           <>
             <Button asChild variant="outline"><Link to="/app/bills"><ArrowLeft className="h-4 w-4" /> Back</Link></Button>
             <Button variant="outline" onClick={handlePdf}><Download className="h-4 w-4" /> PDF</Button>
-            <Button onClick={handleShare}><Share2 className="h-4 w-4" /> WhatsApp</Button>
+            <Button variant="outline" onClick={handleShare}><Share2 className="h-4 w-4" /> Customer WhatsApp</Button>
+            <Button onClick={handleSendToConfigured}><Share2 className="h-4 w-4" /> Send to my WhatsApp</Button>
           </>
         }
       />

@@ -1,5 +1,6 @@
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import type { Bill, BillCage } from "./db";
+import { getStoredWaNumber } from "./waNumber";
 
 export async function generateBillPdf(bill: Bill, cages: BillCage[]): Promise<Uint8Array> {
   const doc = await PDFDocument.create();
@@ -127,7 +128,8 @@ export async function shareOnWhatsApp({
   }
   // Desktop fallback: download PDF, open WhatsApp Web
   downloadPdf(bytes, filename);
-  const num = (phone || "").replace(/\D/g, "");
+  // Prefer the customer's phone; fall back to the configured WhatsApp number from settings.
+  const num = (phone || getStoredWaNumber() || "").replace(/\D/g, "");
   const url = num
     ? `https://wa.me/${num}?text=${encodeURIComponent(message)}`
     : `https://web.whatsapp.com/send?text=${encodeURIComponent(message)}`;
