@@ -13,6 +13,7 @@ import {
   Check,
   ArrowRight,
   Menu,
+  MessageCircle,
 } from "lucide-react";
 import { useState } from "react";
 import heroImg from "@/assets/marketing-hero.jpg";
