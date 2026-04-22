@@ -78,10 +78,11 @@ function useWhatsAppNumber() {
 }
 
 function LandingPage() {
+  const wa = useWhatsAppNumber();
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <MarketingHeader />
-      <Hero />
+      <MarketingHeader waNumber={wa.number} setWaNumber={wa.setNumber} />
+      <Hero waLink={wa.link} />
       <LogoStrip />
       <Features />
       <HowItWorks />
