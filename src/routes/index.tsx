@@ -13,6 +13,7 @@ import {
   Check,
   ArrowRight,
   Menu,
+  MessageCircle,
 } from "lucide-react";
 import { useState } from "react";
 import heroImg from "@/assets/marketing-hero.jpg";
@@ -127,6 +128,20 @@ function Hero() {
           <div className="mt-7 flex flex-wrap gap-3">
             <Button asChild size="lg" className="shadow-[var(--shadow-elegant)]">
               <Link to="/app">Start free <ArrowRight className="ml-1 h-4 w-4" /></Link>
+            </Button>
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="border-[#25D366] text-[#128C7E] hover:bg-[#25D366]/10 hover:text-[#128C7E]"
+            >
+              <a
+                href="https://wa.me/919999999999?text=Hi%2C%20I%27d%20like%20a%20demo%20of%20Murgi%20Hisaab"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <MessageCircle className="mr-1 h-4 w-4" /> Chat on WhatsApp
+              </a>
             </Button>
             <Button asChild size="lg" variant="outline">
               <a href="#how">See how it works</a>
