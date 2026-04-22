@@ -43,6 +43,40 @@ export const Route = createFileRoute("/")({
   component: LandingPage,
 });
 
+const WA_STORAGE_KEY = "mh:waNumber";
+const WA_DEMO_MESSAGE = "Hi, I'd like a demo of Murgi Hisaab";
+
+function sanitizeWaNumber(input: string): string {
+  // Keep digits only; WhatsApp wa.me expects country code + number, no +.
+  return input.replace(/\D/g, "").slice(0, 15);
+}
+
+function useWhatsAppNumber() {
+  const [number, setNumber] = useState<string>("");
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(WA_STORAGE_KEY);
+      if (stored) setNumber(sanitizeWaNumber(stored));
+    } catch {
+      // ignore
+    }
+  }, []);
+  const update = (val: string) => {
+    const clean = sanitizeWaNumber(val);
+    setNumber(clean);
+    try {
+      if (clean) localStorage.setItem(WA_STORAGE_KEY, clean);
+      else localStorage.removeItem(WA_STORAGE_KEY);
+    } catch {
+      // ignore
+    }
+  };
+  const link =
+    (number ? `https://wa.me/${number}` : "https://wa.me/") +
+    `?text=${encodeURIComponent(WA_DEMO_MESSAGE)}`;
+  return { number, setNumber: update, link };
+}
+
 function LandingPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
