@@ -1,6 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   FileText,
   Receipt,
@@ -14,8 +17,9 @@ import {
   ArrowRight,
   Menu,
   MessageCircle,
+  Settings,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import heroImg from "@/assets/marketing-hero.jpg";
 
 export const Route = createFileRoute("/")({
