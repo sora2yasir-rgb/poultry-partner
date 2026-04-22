@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import heroImg from "@/assets/marketing-hero.jpg";
+import { WA_STORAGE_KEY, sanitizeWaNumber } from "@/lib/waNumber";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -43,13 +44,7 @@ export const Route = createFileRoute("/")({
   component: LandingPage,
 });
 
-const WA_STORAGE_KEY = "mh:waNumber";
 const WA_DEMO_MESSAGE = "Hi, I'd like a demo of Murgi Hisaab";
-
-function sanitizeWaNumber(input: string): string {
-  // Keep digits only; WhatsApp wa.me expects country code + number, no +.
-  return input.replace(/\D/g, "").slice(0, 15);
-}
 
 function useWhatsAppNumber() {
   const [number, setNumber] = useState<string>("");
