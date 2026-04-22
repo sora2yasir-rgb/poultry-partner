@@ -86,7 +86,7 @@ function BillDetailPage() {
         description={`${bill.customer_name} · ${fmtDate(bill.date)}`}
         actions={
           <>
-            <Button asChild variant="outline"><Link to="/bills"><ArrowLeft className="h-4 w-4" /> Back</Link></Button>
+            <Button asChild variant="outline"><Link to="/app/bills"><ArrowLeft className="h-4 w-4" /> Back</Link></Button>
             <Button variant="outline" onClick={handlePdf}><Download className="h-4 w-4" /> PDF</Button>
             <Button onClick={handleShare}><Share2 className="h-4 w-4" /> WhatsApp</Button>
           </>

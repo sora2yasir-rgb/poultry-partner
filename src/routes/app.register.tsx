@@ -82,7 +82,7 @@ function RegisterPage() {
                   <TableRow key={b.id}>
                     <TableCell className="text-muted-foreground">{i + 1}</TableCell>
                     <TableCell>
-                      <Link to="/bills/$billId" params={{ billId: String(b.id) }} className="font-medium hover:underline">
+                      <Link to="/app/bills/$billId" params={{ billId: String(b.id) }} className="font-medium hover:underline">
                         {b.customer_name}
                       </Link>
                     </TableCell>

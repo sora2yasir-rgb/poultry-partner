@@ -50,7 +50,7 @@ function BillsPage() {
                 {bills?.map((b) => (
                   <TableRow key={b.id}>
                     <TableCell>
-                      <Link to="/bills/$billId" params={{ billId: String(b.id) }} className="font-medium hover:underline">
+                      <Link to="/app/bills/$billId" params={{ billId: String(b.id) }} className="font-medium hover:underline">
                         #{b.bill_no}
                       </Link>
                     </TableCell>

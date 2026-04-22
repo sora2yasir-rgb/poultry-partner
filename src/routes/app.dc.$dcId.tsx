@@ -70,7 +70,7 @@ function DCDetailPage() {
         description={`${dc.farm ?? ""} · ${dc.vehicle_no ?? ""}${dc.lifting_date ? " · " + fmtDate(dc.lifting_date) : ""}`}
         actions={
           <>
-            <Button asChild variant="outline"><Link to="/dc"><ArrowLeft className="h-4 w-4" /> Back</Link></Button>
+            <Button asChild variant="outline"><Link to="/app/dc"><ArrowLeft className="h-4 w-4" /> Back</Link></Button>
             <Button
               disabled={selected.size === 0}
               onClick={() => setSendOpen(true)}
@@ -118,7 +118,7 @@ function DCDetailPage() {
                       <TableCell className="text-right">{fmt(c.weight_kg)}</TableCell>
                       <TableCell>
                         {assigned ? (
-                          <Link to="/bills/$billId" params={{ billId: String(c.assigned_bill_id) }} className="text-xs text-primary hover:underline">
+                          <Link to="/app/bills/$billId" params={{ billId: String(c.assigned_bill_id) }} className="text-xs text-primary hover:underline">
                             Bill #{c.assigned_bill_id}
                           </Link>
                         ) : (
@@ -159,7 +159,7 @@ function DCDetailPage() {
         onCreated={(billId) => {
           setSelected(new Set());
           setSendOpen(false);
-          navigate({ to: "/bills/$billId", params: { billId: String(billId) } });
+          navigate({ to: "/app/bills/$billId", params: { billId: String(billId) } });
         }}
       />
     </div>

@@ -55,8 +55,8 @@ export function Dashboard() {
         description={new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
         actions={
           <>
-            <Button asChild variant="outline"><Link to="/dc">Upload DC</Link></Button>
-            <Button asChild><Link to="/register">Open Register</Link></Button>
+            <Button asChild variant="outline"><Link to="/app/dc">Upload DC</Link></Button>
+            <Button asChild><Link to="/app/register">Open Register</Link></Button>
           </>
         }
       />
