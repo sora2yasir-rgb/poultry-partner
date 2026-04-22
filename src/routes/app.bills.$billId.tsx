@@ -15,7 +15,7 @@ import { fmt, fmtInt, fmtMoney, fmtDate } from "@/lib/format";
 import { generateBillPdf, downloadPdf, shareOnWhatsApp } from "@/lib/billPdf";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/bills/$billId")({
+export const Route = createFileRoute("/app/bills/$billId")({
   component: BillDetailPage,
 });
 

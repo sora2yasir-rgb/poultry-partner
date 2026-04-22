@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { fmt, fmtInt, fmtMoney, fmtDate } from "@/lib/format";
 import { Receipt } from "lucide-react";
 
-export const Route = createFileRoute("/bills")({
+export const Route = createFileRoute("/app/bills")({
   head: () => ({
     meta: [
       { title: "Bills — Murgi Hisaab" },

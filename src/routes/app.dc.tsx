@@ -13,7 +13,7 @@ import { fmt, fmtInt, fmtDate } from "@/lib/format";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
-export const Route = createFileRoute("/dc")({
+export const Route = createFileRoute("/app/dc")({
   head: () => ({
     meta: [
       { title: "DC Register — Murgi Hisaab" },

@@ -15,7 +15,7 @@ import { fmt, fmtInt, fmtDate } from "@/lib/format";
 import { toast } from "sonner";
 import { ArrowLeft, Send } from "lucide-react";
 
-export const Route = createFileRoute("/dc/$dcId")({
+export const Route = createFileRoute("/app/dc/$dcId")({
   component: DCDetailPage,
 });
 
