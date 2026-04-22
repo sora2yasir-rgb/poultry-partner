@@ -3,12 +3,12 @@ import { LayoutDashboard, FileText, Users, Receipt, BookOpen, BarChart3 } from "
 import { cn } from "@/lib/utils";
 
 const nav = [
-  { to: "/", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/dc", label: "DC Register", icon: FileText },
-  { to: "/register", label: "Daily Register", icon: BookOpen },
-  { to: "/bills", label: "Bills", icon: Receipt },
-  { to: "/customers", label: "Customers", icon: Users },
-  { to: "/reports", label: "Reports", icon: BarChart3 },
+  { to: "/app", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/app/dc", label: "DC Register", icon: FileText },
+  { to: "/app/register", label: "Daily Register", icon: BookOpen },
+  { to: "/app/bills", label: "Bills", icon: Receipt },
+  { to: "/app/customers", label: "Customers", icon: Users },
+  { to: "/app/reports", label: "Reports", icon: BarChart3 },
 ] as const;
 
 export function Sidebar() {
@@ -17,12 +17,14 @@ export function Sidebar() {
   return (
     <aside className="hidden md:flex w-60 shrink-0 flex-col border-r bg-sidebar text-sidebar-foreground">
       <div className="px-5 py-5 border-b">
-        <div className="text-lg font-semibold">Murgi Hisaab</div>
-        <div className="text-xs text-muted-foreground">Wholesaler Manager</div>
+        <Link to="/" className="block">
+          <div className="text-lg font-semibold">Murgi Hisaab</div>
+          <div className="text-xs text-muted-foreground">Wholesaler Manager</div>
+        </Link>
       </div>
       <nav className="flex-1 p-3 space-y-1">
         {nav.map((item) => {
-          const active = item.to === "/" ? path === "/" : path.startsWith(item.to);
+          const active = item.to === "/app" ? path === "/app" : path.startsWith(item.to);
           const Icon = item.icon;
           return (
             <Link
@@ -54,7 +56,7 @@ export function MobileNav() {
   return (
     <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 border-t bg-background flex justify-around py-2">
       {nav.map((item) => {
-        const active = item.to === "/" ? path === "/" : path.startsWith(item.to);
+        const active = item.to === "/app" ? path === "/app" : path.startsWith(item.to);
         const Icon = item.icon;
         return (
           <Link
