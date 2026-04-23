@@ -26,17 +26,17 @@ import { WA_STORAGE_KEY, sanitizeWaNumber } from "@/lib/waNumber";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Murgi Hisaab — Chicken Wholesaler Billing & DC Management" },
+      { title: "PoultryBooks — Chicken Wholesaler Billing & DC Management" },
       {
         name: "description",
         content:
-          "Offline-first software for chicken wholesalers. Scan DC chalans, assign cages, generate bills, share on WhatsApp, and track baki — all from your phone.",
+          "Offline-first software for chicken wholesalers across India. Scan DC challans, assign cages, generate bills, share on WhatsApp, and track outstanding balances — all from your phone.",
       },
-      { property: "og:title", content: "Murgi Hisaab — Chicken Wholesaler Billing & DC Management" },
+      { property: "og:title", content: "PoultryBooks — Chicken Wholesaler Billing & DC Management" },
       {
         property: "og:description",
         content:
-          "Digitize your DC chalans, generate retailer bills in seconds, and send them on WhatsApp. Works offline.",
+          "Digitize your DC challans, generate retailer bills in seconds, and send them on WhatsApp. Works offline.",
       },
       { property: "og:type", content: "website" },
     ],
@@ -44,7 +44,7 @@ export const Route = createFileRoute("/")({
   component: LandingPage,
 });
 
-const WA_DEMO_MESSAGE = "Hi, I'd like a demo of Murgi Hisaab";
+const WA_DEMO_MESSAGE = "Hi, I'd like a demo of PoultryBooks";
 
 function useWhatsAppNumber() {
   const [number, setNumber] = useState<string>("");
@@ -170,10 +170,10 @@ function MarketingHeader({
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-2">
           <div className="grid h-9 w-9 place-items-center rounded-lg bg-[image:var(--gradient-primary)] text-primary-foreground font-bold">
-            M
+            P
           </div>
           <div className="leading-tight">
-            <div className="text-base font-semibold">Murgi Hisaab</div>
+            <div className="text-base font-semibold">PoultryBooks</div>
             <div className="text-[10px] text-muted-foreground -mt-0.5">Wholesaler Manager</div>
           </div>
         </Link>
@@ -223,10 +223,10 @@ function Hero({ waLink }: { waLink: string }) {
           </div>
           <h1 className="mt-4 text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
             Bill faster.{" "}
-            <span className="bg-[image:var(--gradient-primary)] bg-clip-text text-transparent">Track every baki.</span>
+            <span className="bg-[image:var(--gradient-primary)] bg-clip-text text-transparent">Track every balance.</span>
           </h1>
           <p className="mt-5 text-lg text-muted-foreground max-w-xl">
-            Murgi Hisaab digitizes your DC chalan, your daily register and your retailer bills — works offline, prints
+            PoultryBooks digitizes your DC challan, your daily register and your retailer bills — works offline, prints
             instantly, and shares straight to WhatsApp.
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
@@ -248,7 +248,7 @@ function Hero({ waLink }: { waLink: string }) {
             </Button>
           </div>
           <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
-            {["No server needed", "Works offline", "Hindi/Urdu friendly"].map((t) => (
+            {["No server needed", "Works offline", "Built for India"].map((t) => (
               <li key={t} className="flex items-center gap-2"><Check className="h-4 w-4 text-primary" /> {t}</li>
             ))}
           </ul>
@@ -260,7 +260,7 @@ function Hero({ waLink }: { waLink: string }) {
           />
           <img
             src={heroImg}
-            alt="Chicken wholesaler using Murgi Hisaab on a tablet inside a poultry warehouse"
+            alt="Chicken wholesaler using PoultryBooks on a tablet inside a poultry warehouse"
             width={1536}
             height={1024}
             className="relative rounded-2xl border shadow-[var(--shadow-soft)] w-full h-auto"
@@ -295,7 +295,7 @@ const features = [
   {
     icon: Receipt,
     title: "One-tap bills",
-    body: "Tick the cages going to a retailer. A bill is generated automatically with birds, weight, rate, P+B and total baki.",
+    body: "Tick the cages going to a retailer. A bill is generated automatically with birds, weight, rate, previous balance and total due.",
   },
   {
     icon: Share2,
@@ -305,22 +305,22 @@ const features = [
   {
     icon: BookOpen,
     title: "Daily register",
-    body: "Mirrors your physical book: # | Name | Nag | Weight | Rate | Amount | P+B | Total | Paid | Baki. Carries baki forward automatically.",
+    body: "Mirrors your physical book: # | Name | Birds | Weight | Rate | Amount | Prev Bal | Total | Paid | Balance. Carries balance forward automatically.",
   },
   {
     icon: BarChart3,
     title: "Admin dashboard",
-    body: "See today's birds out, weight, cash + online collection, and outstanding baki. Filter by date and export reports.",
+    body: "See today's birds out, weight, cash + online collection, and outstanding balances. Filter by date and export reports.",
   },
   {
     icon: WifiOff,
     title: "Offline first",
-    body: "All data lives on your device. Works in the godown without signal. Syncs automatically when you're back online.",
+    body: "All data lives on your device. Works in the warehouse without signal. Syncs automatically when you're back online.",
   },
   {
     icon: Users,
     title: "Customer master",
-    body: "Royal Chicken, Bismillah Bhai, Tabrez Bhai — add once, reuse forever, with phone numbers for instant WhatsApp.",
+    body: "Add every retailer once with phone numbers and opening balance — reuse forever, with one-tap WhatsApp share.",
   },
   {
     icon: Smartphone,
@@ -339,8 +339,8 @@ function Features() {
             From DC chalan to WhatsApp bill — in 60 seconds.
           </h2>
           <p className="mt-4 text-muted-foreground">
-            Stop juggling notebooks, calculator and PDFs. Murgi Hisaab does the math, keeps the cages straight, and
-            remembers every customer's baki.
+            Stop juggling notebooks, calculator and PDFs. PoultryBooks does the math, keeps the cages straight, and
+            remembers every customer's balance.
           </p>
         </div>
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -370,7 +370,7 @@ const steps = [
   {
     n: "02",
     title: "Assign cages to retailers",
-    body: "Open the DC, tick the cages for Royal Chicken or Bismillah Bhai, hit Send to. A bill is created instantly.",
+    body: "Open the DC, tick the cages for any retailer, hit Send to. A bill is created instantly with all totals.",
   },
   {
     n: "03",
@@ -379,8 +379,8 @@ const steps = [
   },
   {
     n: "04",
-    title: "Record payment, see baki",
-    body: "Mark cash or online payment. Dashboard shows today's totals and every customer's outstanding baki.",
+    title: "Record payment, see balance",
+    body: "Mark cash or online payment. Dashboard shows today's totals and every customer's outstanding balance.",
   },
 ];
 
@@ -414,13 +414,13 @@ function BillPreview() {
           <p className="text-sm font-semibold text-primary uppercase tracking-wider">Looks just like your book</p>
           <h2 className="mt-2 text-3xl md:text-4xl font-bold tracking-tight">A bill your retailer already understands.</h2>
           <p className="mt-4 text-muted-foreground">
-            We kept the layout your customers know — date, cage, birds, weight, rate, P+B and final total. Just digital,
+            We kept the layout your customers know — date, cage, birds, weight, rate, previous balance and final total. Just digital,
             error-free and shareable.
           </p>
           <ul className="mt-6 space-y-3 text-sm">
             {[
               "Live calculation as you change the rate",
-              "Previous baki carried forward automatically",
+              "Previous balance carried forward automatically",
               "PDF generated locally — works offline",
               "One tap to WhatsApp with the customer's number",
             ].map((t) => (
@@ -433,7 +433,7 @@ function BillPreview() {
             <span>DATE: 12.04.2026</span>
             <span className="text-muted-foreground">No. 69</span>
           </div>
-          <div className="text-center font-bold text-lg py-3">JAVEED KG</div>
+          <div className="text-center font-bold text-lg py-3">ABC CHICKEN MART</div>
           <div className="grid grid-cols-3 text-xs uppercase text-muted-foreground border-b pb-1">
             <span>Cage</span><span className="text-center">Birds</span><span className="text-right">Weight</span>
           </div>
@@ -448,7 +448,7 @@ function BillPreview() {
           <div className="mt-3 space-y-1 text-right">
             <div>× 97 <span className="text-muted-foreground">/ kg</span></div>
             <div className="border-t pt-1">15,253</div>
-            <div>P+ <span className="ml-2">34,316</span></div>
+            <div>Prev: <span className="ml-2">34,316</span></div>
             <div className="border-t pt-1 font-bold text-lg text-primary">49,569</div>
           </div>
         </div>
@@ -548,8 +548,8 @@ const faqs = [
     a: "We extract every field from the company DC PDF — order no, vehicle, farm, lot, and the full cage table. You always see a review screen to verify or fix anything before saving.",
   },
   {
-    q: "How is baki tracked?",
-    a: "Each customer's previous balance carries forward automatically. Every bill, cash payment and online payment updates their baki in real time.",
+    q: "How is the outstanding balance tracked?",
+    a: "Each customer's previous balance carries forward automatically. Every bill, cash payment and online payment updates their balance in real time.",
   },
   {
     q: "Do I need to install anything?",
@@ -617,9 +617,9 @@ function MarketingFooter() {
         <div className="md:col-span-2">
           <div className="flex items-center gap-2">
             <div className="grid h-8 w-8 place-items-center rounded-md bg-[image:var(--gradient-primary)] text-primary-foreground font-bold">
-              M
+              P
             </div>
-            <span className="font-semibold">Murgi Hisaab</span>
+            <span className="font-semibold">PoultryBooks</span>
           </div>
           <p className="mt-3 max-w-sm text-muted-foreground">
             Offline-first billing & DC management built for chicken wholesalers.
@@ -637,14 +637,14 @@ function MarketingFooter() {
         <div>
           <div className="font-semibold mb-3">Contact</div>
           <ul className="space-y-2 text-muted-foreground">
-            <li><a href="mailto:hello@murgihisaab.app" className="hover:text-foreground">hello@murgihisaab.app</a></li>
+            <li><a href="mailto:hello@poultrybooks.app" className="hover:text-foreground">hello@poultrybooks.app</a></li>
             <li><a href="https://wa.me/" className="hover:text-foreground">WhatsApp support</a></li>
           </ul>
         </div>
       </div>
       <div className="border-t">
         <div className="mx-auto max-w-6xl px-4 py-5 flex flex-col md:flex-row items-center justify-between gap-2 text-xs text-muted-foreground">
-          <span>© {new Date().getFullYear()} Murgi Hisaab. All rights reserved.</span>
+          <span>© {new Date().getFullYear()} PoultryBooks. All rights reserved.</span>
           <span>Made with ❤️ for poultry traders.</span>
         </div>
       </div>
