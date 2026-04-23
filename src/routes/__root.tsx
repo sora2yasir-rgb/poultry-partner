@@ -29,10 +29,10 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Murgi Hisaab — Chicken Wholesaler Manager" },
+      { title: "PoultryBooks — Chicken Wholesaler Manager" },
       { name: "description", content: "Offline-first chicken wholesaler management: DC import, billing, daily register, WhatsApp bills." },
-      { name: "author", content: "Murgi Hisaab" },
-      { property: "og:title", content: "Murgi Hisaab — Chicken Wholesaler Manager" },
+      { name: "author", content: "PoultryBooks" },
+      { property: "og:title", content: "PoultryBooks — Chicken Wholesaler Manager" },
       { property: "og:description", content: "Offline-first chicken wholesaler management: DC import, billing, daily register, WhatsApp bills." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

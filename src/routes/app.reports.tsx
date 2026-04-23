@@ -12,8 +12,8 @@ import { fmt, fmtInt, fmtMoney } from "@/lib/format";
 export const Route = createFileRoute("/app/reports")({
   head: () => ({
     meta: [
-      { title: "Reports — Murgi Hisaab" },
-      { name: "description", content: "Date-range reports for sales, payments and customer baki." },
+      { title: "Reports — PoultryBooks" },
+      { name: "description", content: "Date-range reports for sales, payments and customer balance." },
     ],
   }),
   component: ReportsPage,
