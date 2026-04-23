@@ -290,7 +290,7 @@ const features = [
   {
     icon: FileText,
     title: "Auto DC import",
-    body: "Upload the company chalan PDF. AI reads order no, vehicle, farm, and the full cage table. Verify and save in seconds.",
+    body: "Upload the company challan PDF. AI reads order no, vehicle, farm, and the full cage table. Verify and save in seconds.",
   },
   {
     icon: Receipt,
@@ -336,7 +336,7 @@ function Features() {
         <div className="max-w-2xl">
           <p className="text-sm font-semibold text-primary uppercase tracking-wider">Everything you need</p>
           <h2 className="mt-2 text-3xl md:text-4xl font-bold tracking-tight">
-            From DC chalan to WhatsApp bill — in 60 seconds.
+            From DC challan to WhatsApp bill — in 60 seconds.
           </h2>
           <p className="mt-4 text-muted-foreground">
             Stop juggling notebooks, calculator and PDFs. PoultryBooks does the math, keeps the cages straight, and
@@ -365,7 +365,7 @@ const steps = [
   {
     n: "01",
     title: "Upload the DC",
-    body: "Get the chalan from the farm? Snap or upload the PDF. The system reads every cage, weight and bird count.",
+    body: "Get the challan from the farm? Snap or upload the PDF. The system reads every cage, weight and bird count.",
   },
   {
     n: "02",
@@ -544,7 +544,7 @@ const faqs = [
     a: "Absolutely. We generate a PDF locally and open WhatsApp with the customer's number and a pre-filled message. On mobile it uses native share so the PDF attaches directly.",
   },
   {
-    q: "Will the AI read every chalan correctly?",
+    q: "Will the AI read every challan correctly?",
     a: "We extract every field from the company DC PDF — order no, vehicle, farm, lot, and the full cage table. You always see a review screen to verify or fix anything before saving.",
   },
   {
