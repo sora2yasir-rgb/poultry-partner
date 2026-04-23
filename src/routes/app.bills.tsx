@@ -10,8 +10,8 @@ import { Receipt } from "lucide-react";
 export const Route = createFileRoute("/app/bills")({
   head: () => ({
     meta: [
-      { title: "Bills — Murgi Hisaab" },
-      { name: "description", content: "All generated bills with totals, payments and outstanding baki." },
+      { title: "Bills — PoultryBooks" },
+      { name: "description", content: "All generated bills with totals, payments and outstanding balance." },
     ],
   }),
   component: BillsPage,
@@ -35,7 +35,7 @@ function BillsPage() {
                   <TableHead className="text-right">Weight</TableHead>
                   <TableHead className="text-right">Rate</TableHead>
                   <TableHead className="text-right">Amount</TableHead>
-                  <TableHead className="text-right">Baki</TableHead>
+                  <TableHead className="text-right">Balance</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

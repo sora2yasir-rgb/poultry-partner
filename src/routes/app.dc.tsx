@@ -16,7 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/app/dc")({
   head: () => ({
     meta: [
-      { title: "DC Register — Murgi Hisaab" },
+      { title: "DC Register — PoultryBooks" },
       { name: "description", content: "Upload company DC PDFs and manage your digital chalan register." },
     ],
   }),

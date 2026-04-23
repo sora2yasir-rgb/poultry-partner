@@ -168,14 +168,14 @@ function BillDetailPage() {
                 <div className="border-t border-foreground/30 mt-1 pt-1">
                   <div className="text-lg font-semibold">{fmtMoney(bill.amount)}</div>
                 </div>
-                <div className="text-sm">P+ {fmtInt(bill.prev_baki)}</div>
+                <div className="text-sm">Prev: {fmtInt(bill.prev_baki)}</div>
                 <div className="border-t border-foreground/30 mt-1 pt-1">
                   <div className="text-xl font-bold">{fmtMoney(bill.grand_total)}</div>
                 </div>
                 <div className="mt-2 text-sm text-muted-foreground">
                   Paid: ₹{fmtInt((bill.paid_cash || 0) + (bill.paid_online || 0))}
                 </div>
-                <div className="text-lg font-bold text-primary">Baki: {fmtMoney(bill.baki)}</div>
+                <div className="text-lg font-bold text-primary">Balance: {fmtMoney(bill.baki)}</div>
               </div>
             </CardContent>
           </Card>
