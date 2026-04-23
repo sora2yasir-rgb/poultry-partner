@@ -15,7 +15,7 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/app/customers")({
   head: () => ({
     meta: [
-      { title: "Customers — Murgi Hisaab" },
+      { title: "Customers — PoultryBooks" },
       { name: "description", content: "Manage your retailer customers, phone numbers and opening balances." },
     ],
   }),
@@ -135,7 +135,7 @@ function CustomerDialog({
         <div className="space-y-3">
           <div>
             <Label>Name *</Label>
-            <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Royal Chicken" />
+            <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. ABC Chicken Mart" />
           </div>
           <div>
             <Label>WhatsApp Number</Label>
@@ -143,7 +143,7 @@ function CustomerDialog({
             <p className="text-xs text-muted-foreground mt-1">Include country code (no + or spaces)</p>
           </div>
           <div>
-            <Label>Opening Balance (Baki)</Label>
+            <Label>Opening Balance</Label>
             <Input
               type="number"
               value={opening}

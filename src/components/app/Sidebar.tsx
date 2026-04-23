@@ -18,7 +18,7 @@ export function Sidebar() {
     <aside className="hidden md:flex w-60 shrink-0 flex-col border-r bg-sidebar text-sidebar-foreground">
       <div className="px-5 py-5 border-b">
         <Link to="/" className="block">
-          <div className="text-lg font-semibold">Murgi Hisaab</div>
+          <div className="text-lg font-semibold">PoultryBooks</div>
           <div className="text-xs text-muted-foreground">Wholesaler Manager</div>
         </Link>
       </div>

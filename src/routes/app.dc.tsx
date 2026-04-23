@@ -16,8 +16,8 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/app/dc")({
   head: () => ({
     meta: [
-      { title: "DC Register — Murgi Hisaab" },
-      { name: "description", content: "Upload company DC PDFs and manage your digital chalan register." },
+      { title: "DC Register — PoultryBooks" },
+      { name: "description", content: "Upload company DC PDFs and manage your digital challan register." },
     ],
   }),
   component: DCListPage,
@@ -80,7 +80,7 @@ function DCListPage() {
     <div>
       <PageHeader
         title="DC Register"
-        description="Digital chalan register — upload company DC and manage cages"
+        description="Digital challan register — upload company DC and manage cages"
         actions={
           <>
             <input
@@ -138,7 +138,7 @@ function DCListPage() {
                   <TableRow>
                     <TableCell colSpan={8} className="text-center text-muted-foreground py-10">
                       <FileText className="mx-auto h-8 w-8 mb-2 opacity-40" />
-                      No DCs yet. Upload your first chalan PDF above.
+                      No DCs yet. Upload your first challan PDF above.
                     </TableCell>
                   </TableRow>
                 )}

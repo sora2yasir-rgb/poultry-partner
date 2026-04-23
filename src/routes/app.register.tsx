@@ -12,8 +12,8 @@ import { fmt, fmtInt, fmtMoney, fmtDate } from "@/lib/format";
 export const Route = createFileRoute("/app/register")({
   head: () => ({
     meta: [
-      { title: "Daily Register — Murgi Hisaab" },
-      { name: "description", content: "Daily retailer register: birds, weight, rate, amount, paid and baki." },
+      { title: "Daily Register — PoultryBooks" },
+      { name: "description", content: "Daily retailer register: birds, weight, rate, amount, paid and balance." },
     ],
   }),
   component: RegisterPage,
@@ -60,14 +60,14 @@ function RegisterPage() {
                 <TableRow>
                   <TableHead className="w-12">#</TableHead>
                   <TableHead>Name</TableHead>
-                  <TableHead className="text-right">Nag</TableHead>
+                  <TableHead className="text-right">Birds</TableHead>
                   <TableHead className="text-right">Weight</TableHead>
                   <TableHead className="text-right">Rate</TableHead>
                   <TableHead className="text-right">Amount</TableHead>
-                  <TableHead className="text-right">P+B</TableHead>
+                  <TableHead className="text-right">Prev Bal</TableHead>
                   <TableHead className="text-right">Total</TableHead>
                   <TableHead className="text-right">Paid</TableHead>
-                  <TableHead className="text-right">Baki</TableHead>
+                  <TableHead className="text-right">Balance</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

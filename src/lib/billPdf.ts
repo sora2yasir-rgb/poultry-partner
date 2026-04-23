@@ -66,7 +66,7 @@ export async function generateBillPdf(bill: Bill, cages: BillCage[]): Promise<Ui
   y -= 16;
   draw(String(bill.amount), right - 10, y, { align: "right", bold: true, size: 13 });
   y -= 18;
-  draw(`P+ ${bill.prev_baki}`, right - 10, y, { align: "right", size: 11 });
+  draw(`Prev: ${bill.prev_baki}`, right - 10, y, { align: "right", size: 11 });
   y -= 6;
   line(y);
   y -= 16;
@@ -78,7 +78,7 @@ export async function generateBillPdf(bill: Bill, cages: BillCage[]): Promise<Ui
     draw(`Paid Online: ${bill.paid_online}`, left + 130, y, { size: 10 });
     y -= 14;
   }
-  draw(`Baki: ${bill.baki}`, right - 10, y, { align: "right", bold: true, size: 13 });
+  draw(`Balance: ${bill.baki}`, right - 10, y, { align: "right", bold: true, size: 13 });
 
   return await doc.save();
 }
@@ -112,7 +112,7 @@ export async function shareOnWhatsApp({
   const bytes = await generateBillPdf(bill, cages);
   const filename = `Bill-${bill.bill_no}-${bill.customer_name.replace(/\s+/g, "_")}.pdf`;
 
-  const message = `${bill.customer_name}\nBill #${bill.bill_no} — ${formatDate(bill.date)}\nBirds: ${bill.total_birds}, Weight: ${bill.total_weight.toFixed(2)} kg\nRate: ₹${bill.rate}\nAmount: ₹${bill.amount}\nPrev Baki: ₹${bill.prev_baki}\n*Total Baki: ₹${bill.baki}*`;
+  const message = `${bill.customer_name}\nBill #${bill.bill_no} — ${formatDate(bill.date)}\nBirds: ${bill.total_birds}, Weight: ${bill.total_weight.toFixed(2)} kg\nRate: ₹${bill.rate}\nAmount: ₹${bill.amount}\nPrevious Balance: ₹${bill.prev_baki}\n*Total Balance: ₹${bill.baki}*`;
 
   // Try Web Share API (mobile) with file
   const file = new File([bytes as BlobPart], filename, { type: "application/pdf" });

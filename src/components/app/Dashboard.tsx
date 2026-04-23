@@ -65,7 +65,7 @@ export function Dashboard() {
           <StatCard label="Birds Out" value={fmtInt(data?.totalBirds ?? 0)} sub="today" />
           <StatCard label="Weight (kg)" value={fmt(data?.totalWeight ?? 0)} sub="today" />
           <StatCard label="Billed Today" value={fmtMoney(data?.totalBilled ?? 0)} sub={`${data?.todayBillCount ?? 0} bills`} />
-          <StatCard label="Outstanding Baki" value={fmtMoney(data?.outstanding ?? 0)} sub={`${data?.debtors.length ?? 0} customers`} highlight />
+          <StatCard label="Outstanding Balance" value={fmtMoney(data?.outstanding ?? 0)} sub={`${data?.debtors.length ?? 0} customers`} highlight />
         </div>
         <div className="grid gap-4 md:grid-cols-2">
           <Card>
@@ -79,7 +79,7 @@ export function Dashboard() {
             </CardContent>
           </Card>
           <Card>
-            <CardHeader><CardTitle>Top Debtors (Baki)</CardTitle></CardHeader>
+            <CardHeader><CardTitle>Top Debtors</CardTitle></CardHeader>
             <CardContent>
               {data && data.debtors.length === 0 ? (
                 <p className="text-sm text-muted-foreground">No outstanding balances. 🎉</p>
@@ -88,7 +88,7 @@ export function Dashboard() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Customer</TableHead>
-                      <TableHead className="text-right">Baki</TableHead>
+                      <TableHead className="text-right">Balance</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
