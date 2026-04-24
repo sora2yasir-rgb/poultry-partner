@@ -24,7 +24,33 @@ function RegisterPage() {
   const data = useLiveQuery(async () => {
     const bills = await db.bills.where("date").equals(date).toArray();
     const payments = await db.payments.where("date").equals(date).toArray();
-    return { bills, payments };
+    const customers = await db.customers.toArray();
+    // Bills in order they were created (matches the physical book)
+    bills.sort((a, b) => a.created_at.localeCompare(b.created_at));
+    // Payment-only rows: customers who paid today but have no bill on this date
+    const billedCustomerIds = new Set(bills.map((b) => b.customer_id));
+    const paymentOnlyByCustomer = new Map<number, { cash: number; online: number; firstAt: string }>();
+    for (const p of payments) {
+      if (billedCustomerIds.has(p.customer_id)) continue; // already shown via bill row
+      const cur = paymentOnlyByCustomer.get(p.customer_id) ?? { cash: 0, online: 0, firstAt: p.created_at };
+      if (p.mode === "cash") cur.cash += p.amount;
+      else cur.online += p.amount;
+      if (p.created_at < cur.firstAt) cur.firstAt = p.created_at;
+      paymentOnlyByCustomer.set(p.customer_id, cur);
+    }
+    const paymentOnlyRows = Array.from(paymentOnlyByCustomer.entries())
+      .map(([customerId, v]) => {
+        const c = customers.find((x) => x.id === customerId);
+        return {
+          customerId,
+          name: c?.name ?? "Unknown",
+          cash: v.cash,
+          online: v.online,
+          firstAt: v.firstAt,
+        };
+      })
+      .sort((a, b) => a.firstAt.localeCompare(b.firstAt));
+    return { bills, payments, paymentOnlyRows };
   }, [date]);
 
   const totals = (data?.bills ?? []).reduce(
@@ -39,6 +65,10 @@ function RegisterPage() {
   );
   const cash = (data?.payments ?? []).filter((p) => p.mode === "cash").reduce((s, p) => s + p.amount, 0);
   const online = (data?.payments ?? []).filter((p) => p.mode === "online").reduce((s, p) => s + p.amount, 0);
+
+  const billRowCount = data?.bills.length ?? 0;
+  const paymentOnlyTotal = (data?.paymentOnlyRows ?? []).reduce((s, r) => s + r.cash + r.online, 0);
+  const hasAnyRows = billRowCount > 0 || (data?.paymentOnlyRows.length ?? 0) > 0;
 
   return (
     <div>
@@ -71,10 +101,10 @@ function RegisterPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data && data.bills.length === 0 && (
+                {data && !hasAnyRows && (
                   <TableRow>
                     <TableCell colSpan={10} className="text-center text-muted-foreground py-10">
-                      No bills for this date.
+                      No bills or payments for this date.
                     </TableCell>
                   </TableRow>
                 )}
@@ -96,7 +126,24 @@ function RegisterPage() {
                     <TableCell className="text-right font-medium">{fmtMoney(b.baki)}</TableCell>
                   </TableRow>
                 ))}
-                {data && data.bills.length > 0 && (
+                {data?.paymentOnlyRows.map((r, i) => (
+                  <TableRow key={`pmt-${r.customerId}`} className="bg-muted/10">
+                    <TableCell className="text-muted-foreground">{billRowCount + i + 1}</TableCell>
+                    <TableCell>
+                      <span className="font-medium">{r.name}</span>
+                      <span className="ml-2 text-xs text-muted-foreground">(payment only)</span>
+                    </TableCell>
+                    <TableCell className="text-right text-muted-foreground">—</TableCell>
+                    <TableCell className="text-right text-muted-foreground">—</TableCell>
+                    <TableCell className="text-right text-muted-foreground">—</TableCell>
+                    <TableCell className="text-right text-muted-foreground">—</TableCell>
+                    <TableCell className="text-right text-muted-foreground">—</TableCell>
+                    <TableCell className="text-right text-muted-foreground">—</TableCell>
+                    <TableCell className="text-right">{fmtMoney(r.cash + r.online)}</TableCell>
+                    <TableCell className="text-right text-muted-foreground">—</TableCell>
+                  </TableRow>
+                ))}
+                {data && hasAnyRows && (
                   <TableRow className="bg-muted/40 font-semibold">
                     <TableCell></TableCell>
                     <TableCell>Total</TableCell>
@@ -106,7 +153,7 @@ function RegisterPage() {
                     <TableCell className="text-right">{fmtMoney(totals.amount)}</TableCell>
                     <TableCell></TableCell>
                     <TableCell></TableCell>
-                    <TableCell className="text-right">{fmtMoney(totals.paid)}</TableCell>
+                    <TableCell className="text-right">{fmtMoney(totals.paid + paymentOnlyTotal)}</TableCell>
                     <TableCell className="text-right">{fmtMoney(totals.baki)}</TableCell>
                   </TableRow>
                 )}
