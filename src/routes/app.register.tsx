@@ -27,6 +27,20 @@ function RegisterPage() {
     const customers = await db.customers.toArray();
     // Bills in order they were created (matches the physical book)
     bills.sort((a, b) => a.created_at.localeCompare(b.created_at));
+    // Per-bill Paid is derived from payments linked via bill_id (source of truth).
+    const paidByBill = new Map<number, number>();
+    for (const p of payments) {
+      if (p.bill_id == null) continue;
+      paidByBill.set(p.bill_id, (paidByBill.get(p.bill_id) ?? 0) + p.amount);
+    }
+    const billRows = bills.map((b) => {
+      const paid = paidByBill.get(b.id!) ?? 0;
+      return {
+        ...b,
+        paid_linked: paid,
+        baki_linked: Math.max(0, b.grand_total - paid),
+      };
+    });
     // Payment-only rows: customers who paid today but have no bill on this date
     const billedCustomerIds = new Set(bills.map((b) => b.customer_id));
     const paymentOnlyByCustomer = new Map<number, { cash: number; online: number; firstAt: string }>();
@@ -50,7 +64,7 @@ function RegisterPage() {
         };
       })
       .sort((a, b) => a.firstAt.localeCompare(b.firstAt));
-    return { bills, payments, paymentOnlyRows };
+    return { bills: billRows, payments, paymentOnlyRows };
   }, [date]);
 
   const totals = (data?.bills ?? []).reduce(
@@ -58,8 +72,8 @@ function RegisterPage() {
       birds: s.birds + b.total_birds,
       weight: s.weight + b.total_weight,
       amount: s.amount + b.amount,
-      paid: s.paid + (b.paid_cash + b.paid_online),
-      baki: s.baki + b.baki,
+      paid: s.paid + b.paid_linked,
+      baki: s.baki + b.baki_linked,
     }),
     { birds: 0, weight: 0, amount: 0, paid: 0, baki: 0 },
   );
@@ -122,8 +136,8 @@ function RegisterPage() {
                     <TableCell className="text-right">{fmtMoney(b.amount)}</TableCell>
                     <TableCell className="text-right">{fmtMoney(b.prev_baki)}</TableCell>
                     <TableCell className="text-right">{fmtMoney(b.grand_total)}</TableCell>
-                    <TableCell className="text-right">{fmtMoney(b.paid_cash + b.paid_online)}</TableCell>
-                    <TableCell className="text-right font-medium">{fmtMoney(b.baki)}</TableCell>
+                    <TableCell className="text-right">{fmtMoney(b.paid_linked)}</TableCell>
+                    <TableCell className="text-right font-medium">{fmtMoney(b.baki_linked)}</TableCell>
                   </TableRow>
                 ))}
                 {data?.paymentOnlyRows.map((r, i) => (
