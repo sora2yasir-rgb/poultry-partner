@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
-import { db, nowISO, todayStr } from "@/lib/db";
+import { db, nowISO, todayStr, type Bill } from "@/lib/db";
 import { PageHeader } from "@/components/app/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -41,11 +41,11 @@ function PaymentsPage() {
   const [saving, setSaving] = useState(false);
 
   const cidNum = customerId ? Number(customerId) : null;
-  const bills = useLiveQuery(
+  const bills = useLiveQuery<Bill[]>(
     () =>
       cidNum
         ? db.bills.where("customer_id").equals(cidNum).reverse().sortBy("created_at")
-        : Promise.resolve([]),
+        : Promise.resolve([] as Bill[]),
     [cidNum],
   );
 
