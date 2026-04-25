@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db, nowISO, todayStr, type Bill } from "@/lib/db";
 import { PageHeader } from "@/components/app/PageHeader";
@@ -16,9 +16,17 @@ import {
 } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { fmtMoney, fmtDate } from "@/lib/format";
+import {
+  buildPaymentRows,
+  paymentsToCsv,
+  paymentsToPdf,
+  downloadBlob,
+} from "@/lib/paymentExport";
 import { getCustomerBakiExcluding } from "@/lib/db";
 import { toast } from "sonner";
-import { IndianRupee, WifiOff } from "lucide-react";
+import { IndianRupee, WifiOff, FileDown, FileText, CheckCircle2 } from "lucide-react";
+
+const LAST_EXPORT_KEY = "payments_last_export_at";
 
 export const Route = createFileRoute("/app/payments")({
   component: PaymentsPage,
@@ -31,6 +39,16 @@ function PaymentsPage() {
     () => db.payments.orderBy("created_at").reverse().limit(15).toArray(),
     [],
   );
+
+  const [lastExportAt, setLastExportAt] = useState<string | null>(null);
+  useEffect(() => {
+    setLastExportAt(localStorage.getItem(LAST_EXPORT_KEY));
+  }, []);
+
+  const unexportedCount = useLiveQuery(async () => {
+    if (!lastExportAt) return await db.payments.count();
+    return await db.payments.where("created_at").above(lastExportAt).count();
+  }, [lastExportAt]);
 
   const [customerId, setCustomerId] = useState<string>("");
   const [billId, setBillId] = useState<string>("none");
@@ -109,11 +127,61 @@ function PaymentsPage() {
     }
   }
 
+  async function exportBackup(format: "csv" | "pdf", scope: "new" | "all") {
+    const all = await db.payments.orderBy("created_at").toArray();
+    const list =
+      scope === "new" && lastExportAt
+        ? all.filter((p) => p.created_at > lastExportAt)
+        : all;
+    if (list.length === 0) {
+      toast.info("Nothing new to export");
+      return;
+    }
+    const rows = await buildPaymentRows(list);
+    const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-");
+    const base = `payments-backup-${scope}-${stamp}`;
+    if (format === "csv") {
+      const csv = paymentsToCsv(rows);
+      downloadBlob(csv, `${base}.csv`, "text/csv;charset=utf-8");
+    } else {
+      const bytes = await paymentsToPdf(rows);
+      downloadBlob(bytes.buffer as ArrayBuffer, `${base}.pdf`, "application/pdf");
+    }
+    const now = new Date().toISOString();
+    localStorage.setItem(LAST_EXPORT_KEY, now);
+    setLastExportAt(now);
+    toast.success(`Exported ${list.length} payment${list.length === 1 ? "" : "s"}`);
+  }
+
   return (
     <div>
       <PageHeader
         title="Quick Payment"
         description="Record a payment instantly. Saves locally — works fully offline."
+        actions={
+          <>
+            <Button
+              variant="outline"
+              onClick={() => exportBackup("csv", "new")}
+              disabled={!unexportedCount}
+            >
+              <FileDown className="h-4 w-4" />
+              Export new (CSV)
+              {unexportedCount ? (
+                <span className="ml-1 rounded-full bg-primary/10 text-primary px-1.5 text-xs">
+                  {unexportedCount}
+                </span>
+              ) : null}
+            </Button>
+            <Button variant="outline" onClick={() => exportBackup("pdf", "new")} disabled={!unexportedCount}>
+              <FileText className="h-4 w-4" />
+              Export new (PDF)
+            </Button>
+            <Button variant="ghost" onClick={() => exportBackup("csv", "all")}>
+              All as CSV
+            </Button>
+          </>
+        }
       />
       <div className="p-6 grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
@@ -123,6 +191,17 @@ function PaymentsPage() {
                 <WifiOff className="h-3.5 w-3.5" />
                 Stored on this device. No internet needed.
               </div>
+              {lastExportAt ? (
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
+                  Last backup exported {new Date(lastExportAt).toLocaleString("en-IN")}
+                  {unexportedCount ? ` · ${unexportedCount} new since` : " · all caught up"}
+                </div>
+              ) : (
+                <div className="text-xs text-muted-foreground">
+                  No backup exported yet. Use the Export buttons above.
+                </div>
+              )}
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="sm:col-span-2">
