@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { LayoutDashboard, FileText, Users, Receipt, BookOpen, BarChart3 } from "lucide-react";
+import { LayoutDashboard, FileText, Users, Receipt, BookOpen, BarChart3, IndianRupee } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const nav = [
@@ -7,6 +7,7 @@ const nav = [
   { to: "/app/dc", label: "DC Register", icon: FileText },
   { to: "/app/register", label: "Daily Register", icon: BookOpen },
   { to: "/app/bills", label: "Bills", icon: Receipt },
+  { to: "/app/payments", label: "Payments", icon: IndianRupee },
   { to: "/app/customers", label: "Customers", icon: Users },
   { to: "/app/reports", label: "Reports", icon: BarChart3 },
 ] as const;

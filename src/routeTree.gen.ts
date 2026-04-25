@@ -14,6 +14,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppReportsRouteImport } from './routes/app.reports'
 import { Route as AppRegisterRouteImport } from './routes/app.register'
+import { Route as AppPaymentsRouteImport } from './routes/app.payments'
 import { Route as AppDcRouteImport } from './routes/app.dc'
 import { Route as AppCustomersRouteImport } from './routes/app.customers'
 import { Route as AppBillsRouteImport } from './routes/app.bills'
@@ -43,6 +44,11 @@ const AppReportsRoute = AppReportsRouteImport.update({
 const AppRegisterRoute = AppRegisterRouteImport.update({
   id: '/register',
   path: '/register',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPaymentsRoute = AppPaymentsRouteImport.update({
+  id: '/payments',
+  path: '/payments',
   getParentRoute: () => AppRoute,
 } as any)
 const AppDcRoute = AppDcRouteImport.update({
@@ -77,6 +83,7 @@ export interface FileRoutesByFullPath {
   '/app/bills': typeof AppBillsRouteWithChildren
   '/app/customers': typeof AppCustomersRoute
   '/app/dc': typeof AppDcRouteWithChildren
+  '/app/payments': typeof AppPaymentsRoute
   '/app/register': typeof AppRegisterRoute
   '/app/reports': typeof AppReportsRoute
   '/app/': typeof AppIndexRoute
@@ -88,6 +95,7 @@ export interface FileRoutesByTo {
   '/app/bills': typeof AppBillsRouteWithChildren
   '/app/customers': typeof AppCustomersRoute
   '/app/dc': typeof AppDcRouteWithChildren
+  '/app/payments': typeof AppPaymentsRoute
   '/app/register': typeof AppRegisterRoute
   '/app/reports': typeof AppReportsRoute
   '/app': typeof AppIndexRoute
@@ -101,6 +109,7 @@ export interface FileRoutesById {
   '/app/bills': typeof AppBillsRouteWithChildren
   '/app/customers': typeof AppCustomersRoute
   '/app/dc': typeof AppDcRouteWithChildren
+  '/app/payments': typeof AppPaymentsRoute
   '/app/register': typeof AppRegisterRoute
   '/app/reports': typeof AppReportsRoute
   '/app/': typeof AppIndexRoute
@@ -115,6 +124,7 @@ export interface FileRouteTypes {
     | '/app/bills'
     | '/app/customers'
     | '/app/dc'
+    | '/app/payments'
     | '/app/register'
     | '/app/reports'
     | '/app/'
@@ -126,6 +136,7 @@ export interface FileRouteTypes {
     | '/app/bills'
     | '/app/customers'
     | '/app/dc'
+    | '/app/payments'
     | '/app/register'
     | '/app/reports'
     | '/app'
@@ -138,6 +149,7 @@ export interface FileRouteTypes {
     | '/app/bills'
     | '/app/customers'
     | '/app/dc'
+    | '/app/payments'
     | '/app/register'
     | '/app/reports'
     | '/app/'
@@ -185,6 +197,13 @@ declare module '@tanstack/react-router' {
       path: '/register'
       fullPath: '/app/register'
       preLoaderRoute: typeof AppRegisterRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/payments': {
+      id: '/app/payments'
+      path: '/payments'
+      fullPath: '/app/payments'
+      preLoaderRoute: typeof AppPaymentsRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/dc': {
@@ -251,6 +270,7 @@ interface AppRouteChildren {
   AppBillsRoute: typeof AppBillsRouteWithChildren
   AppCustomersRoute: typeof AppCustomersRoute
   AppDcRoute: typeof AppDcRouteWithChildren
+  AppPaymentsRoute: typeof AppPaymentsRoute
   AppRegisterRoute: typeof AppRegisterRoute
   AppReportsRoute: typeof AppReportsRoute
   AppIndexRoute: typeof AppIndexRoute
@@ -260,6 +280,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppBillsRoute: AppBillsRouteWithChildren,
   AppCustomersRoute: AppCustomersRoute,
   AppDcRoute: AppDcRouteWithChildren,
+  AppPaymentsRoute: AppPaymentsRoute,
   AppRegisterRoute: AppRegisterRoute,
   AppReportsRoute: AppReportsRoute,
   AppIndexRoute: AppIndexRoute,
