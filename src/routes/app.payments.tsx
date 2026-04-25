@@ -145,7 +145,7 @@ function PaymentsPage() {
       downloadBlob(csv, `${base}.csv`, "text/csv;charset=utf-8");
     } else {
       const bytes = await paymentsToPdf(rows);
-      downloadBlob(bytes, `${base}.pdf`, "application/pdf");
+      downloadBlob(bytes.buffer as ArrayBuffer, `${base}.pdf`, "application/pdf");
     }
     const now = new Date().toISOString();
     localStorage.setItem(LAST_EXPORT_KEY, now);
@@ -193,7 +193,7 @@ function PaymentsPage() {
               </div>
               {lastExportAt ? (
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-green-600" />
+                  <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
                   Last backup exported {new Date(lastExportAt).toLocaleString("en-IN")}
                   {unexportedCount ? ` · ${unexportedCount} new since` : " · all caught up"}
                 </div>
