@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -22,9 +23,22 @@ import {
   paymentsToPdf,
   downloadBlob,
 } from "@/lib/paymentExport";
+import {
+  isDailyBackupEnabled,
+  setDailyBackupEnabled,
+  getLastBackupAt,
+  runDailyBackupIfDue,
+} from "@/lib/dailyBackup";
 import { getCustomerBakiExcluding } from "@/lib/db";
 import { toast } from "sonner";
-import { IndianRupee, WifiOff, FileDown, FileText, CheckCircle2 } from "lucide-react";
+import {
+  IndianRupee,
+  WifiOff,
+  FileDown,
+  FileText,
+  CheckCircle2,
+  CalendarClock,
+} from "lucide-react";
 
 const LAST_EXPORT_KEY = "payments_last_export_at";
 
@@ -44,6 +58,38 @@ function PaymentsPage() {
   useEffect(() => {
     setLastExportAt(localStorage.getItem(LAST_EXPORT_KEY));
   }, []);
+
+  const [autoOn, setAutoOn] = useState(false);
+  const [lastAutoAt, setLastAutoAt] = useState<string | null>(null);
+  useEffect(() => {
+    setAutoOn(isDailyBackupEnabled());
+    setLastAutoAt(getLastBackupAt());
+  }, []);
+
+  function toggleAuto(on: boolean) {
+    setDailyBackupEnabled(on);
+    setAutoOn(on);
+    if (on) {
+      toast.success("Daily auto-backup enabled", {
+        description: "A CSV + PDF will be saved to this device once a day.",
+      });
+    } else {
+      toast.message("Daily auto-backup turned off");
+    }
+  }
+
+  async function runAutoNow() {
+    try {
+      const did = await runDailyBackupIfDue({ force: true });
+      setLastAutoAt(getLastBackupAt());
+      setLastExportAt(localStorage.getItem(LAST_EXPORT_KEY));
+      if (did) toast.success("Today's backup saved");
+      else toast.info("No payments recorded today yet");
+    } catch (e) {
+      console.error(e);
+      toast.error("Could not run backup");
+    }
+  }
 
   const unexportedCount = useLiveQuery(async () => {
     if (!lastExportAt) return await db.payments.count();
@@ -202,6 +248,31 @@ function PaymentsPage() {
                   No backup exported yet. Use the Export buttons above.
                 </div>
               )}
+
+              <div className="rounded-md border bg-muted/30 p-3 space-y-2">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-start gap-2">
+                    <CalendarClock className="h-4 w-4 mt-0.5 text-primary" />
+                    <div>
+                      <div className="text-sm font-medium">Daily auto-backup</div>
+                      <div className="text-xs text-muted-foreground">
+                        Saves a CSV + PDF of today's payments to this device, once a day.
+                      </div>
+                    </div>
+                  </div>
+                  <Switch checked={autoOn} onCheckedChange={toggleAuto} />
+                </div>
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span>
+                    {lastAutoAt
+                      ? `Last auto-backup: ${new Date(lastAutoAt).toLocaleString("en-IN")}`
+                      : "Never run yet"}
+                  </span>
+                  <Button size="sm" variant="ghost" onClick={runAutoNow}>
+                    Run now
+                  </Button>
+                </div>
+              </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="sm:col-span-2">

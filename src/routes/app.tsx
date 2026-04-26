@@ -1,12 +1,14 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { Sidebar, MobileNav } from "@/components/app/Sidebar";
 import { Toaster } from "@/components/ui/sonner";
+import { useDailyBackup } from "@/hooks/use-daily-backup";
 
 export const Route = createFileRoute("/app")({
   component: AppLayout,
 });
 
 function AppLayout() {
+  useDailyBackup();
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar />
