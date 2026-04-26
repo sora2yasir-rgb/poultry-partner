@@ -1,6 +1,10 @@
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { runDailyBackupIfDue, isDailyBackupEnabled } from "@/lib/dailyBackup";
+import {
+  runRegisterDailyPdfIfDue,
+  isRegisterAutoEnabled,
+} from "@/lib/registerBackup";
 
 /**
  * Mount-once hook: on app start (and every hour after), if the user has
@@ -13,13 +17,22 @@ export function useDailyBackup() {
 
     async function tick() {
       if (cancelled) return;
-      if (!isDailyBackupEnabled()) return;
       try {
-        const did = await runDailyBackupIfDue();
-        if (did) {
-          toast.success("Daily payments backup downloaded", {
-            description: "CSV + PDF saved to your device.",
-          });
+        if (isDailyBackupEnabled()) {
+          const did = await runDailyBackupIfDue();
+          if (did) {
+            toast.success("Daily payments backup downloaded", {
+              description: "CSV + PDF saved to your device.",
+            });
+          }
+        }
+        if (isRegisterAutoEnabled()) {
+          const did = await runRegisterDailyPdfIfDue();
+          if (did) {
+            toast.success("Daily Register PDF saved", {
+              description: "Today's register downloaded to your device.",
+            });
+          }
         }
       } catch (e) {
         console.error("daily backup failed", e);
