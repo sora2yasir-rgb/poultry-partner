@@ -1,13 +1,25 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db, todayStr } from "@/lib/db";
 import { PageHeader } from "@/components/app/PageHeader";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { fmt, fmtInt, fmtMoney, fmtDate } from "@/lib/format";
+import { buildRegisterReport, registerToPdf } from "@/lib/registerPdf";
+import { downloadBlob } from "@/lib/paymentExport";
+import {
+  isRegisterAutoEnabled,
+  setRegisterAutoEnabled,
+  getRegisterLastAt,
+  runRegisterDailyPdfIfDue,
+} from "@/lib/registerBackup";
+import { toast } from "sonner";
+import { FileText, CalendarClock } from "lucide-react";
 
 export const Route = createFileRoute("/app/register")({
   head: () => ({
@@ -21,6 +33,52 @@ export const Route = createFileRoute("/app/register")({
 
 function RegisterPage() {
   const [date, setDate] = useState(todayStr());
+  const [autoOn, setAutoOn] = useState(false);
+  const [lastAutoAt, setLastAutoAt] = useState<string | null>(null);
+  const [downloading, setDownloading] = useState(false);
+
+  useEffect(() => {
+    setAutoOn(isRegisterAutoEnabled());
+    setLastAutoAt(getRegisterLastAt());
+  }, []);
+
+  function toggleAuto(on: boolean) {
+    setRegisterAutoEnabled(on);
+    setAutoOn(on);
+    if (on) {
+      toast.success("Auto-save enabled", {
+        description: "Today's Daily Register PDF will be saved to this device once a day.",
+      });
+    } else {
+      toast.message("Auto-save turned off");
+    }
+  }
+
+  async function downloadPdf(forceAuto = false) {
+    setDownloading(true);
+    try {
+      if (forceAuto) {
+        const did = await runRegisterDailyPdfIfDue({ date, force: true });
+        setLastAutoAt(getRegisterLastAt());
+        if (!did) toast.info("Nothing to export for this date");
+        return;
+      }
+      const report = await buildRegisterReport(date);
+      if (report.rows.length === 0) {
+        toast.info("No bills or payments for this date");
+        return;
+      }
+      const bytes = await registerToPdf(report);
+      downloadBlob(bytes.buffer as ArrayBuffer, `register-${date}.pdf`, "application/pdf");
+      toast.success(`Register PDF downloaded for ${fmtDate(date)}`);
+    } catch (e) {
+      console.error(e);
+      toast.error("Could not generate PDF");
+    } finally {
+      setDownloading(false);
+    }
+  }
+
   const data = useLiveQuery(async () => {
     const bills = await db.bills.where("date").equals(date).toArray();
     const payments = await db.payments.where("date").equals(date).toArray();
@@ -93,10 +151,41 @@ function RegisterPage() {
           <div className="flex items-center gap-2">
             <Label htmlFor="date" className="text-sm">Date</Label>
             <Input id="date" type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-44" />
+            <Button variant="outline" onClick={() => downloadPdf(false)} disabled={downloading}>
+              <FileText className="h-4 w-4" />
+              Download PDF
+            </Button>
           </div>
         }
       />
       <div className="p-6 space-y-4">
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="flex items-start gap-2">
+                <CalendarClock className="h-4 w-4 mt-0.5 text-primary" />
+                <div>
+                  <div className="text-sm font-medium">Auto-save Daily Register PDF</div>
+                  <div className="text-xs text-muted-foreground">
+                    Saves today's register PDF to this device, once a day, while the app is open.
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    {lastAutoAt
+                      ? `Last auto-save: ${new Date(lastAutoAt).toLocaleString("en-IN")}`
+                      : "Never run yet"}
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <Button size="sm" variant="ghost" onClick={() => downloadPdf(true)} disabled={downloading}>
+                  Save now
+                </Button>
+                <Switch checked={autoOn} onCheckedChange={toggleAuto} />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         <Card>
           <CardContent className="p-0 overflow-x-auto">
             <Table>
