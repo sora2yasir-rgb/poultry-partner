@@ -6,8 +6,9 @@ import { PageHeader } from "@/components/app/PageHeader";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
 import { fmt, fmtInt, fmtMoney, fmtDate } from "@/lib/format";
-import { ChevronLeft, FolderOpen, Calendar } from "lucide-react";
+import { ChevronLeft, FolderOpen, Calendar, Search, X } from "lucide-react";
 
 export const Route = createFileRoute("/app/bills/archive")({
   head: () => ({
@@ -24,6 +25,20 @@ function ArchivePage() {
   const [year, setYear] = useState<string | null>(null);
   const [month, setMonth] = useState<string | null>(null);
   const [day, setDay] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const q = query.trim().toLowerCase();
+
+  const searchResults = useMemo(() => {
+    if (!q) return null;
+    return (bills ?? []).filter((b) => {
+      return (
+        b.customer_name?.toLowerCase().includes(q) ||
+        b.bill_no?.toLowerCase().includes(q) ||
+        b.date?.toLowerCase().includes(q) ||
+        fmtDate(b.date).toLowerCase().includes(q)
+      );
+    });
+  }, [bills, q]);
 
   const tree = useMemo(() => {
     const t: Record<string, Record<string, Record<string, typeof bills>>> = {};
@@ -77,6 +92,71 @@ function ArchivePage() {
         }
       />
       <div className="p-6 space-y-4">
+        <div className="relative max-w-md">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search by customer, bill no, or date (e.g. 2025-10-15)…"
+            className="pl-8 pr-8"
+          />
+          {query && (
+            <button
+              onClick={() => setQuery("")}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              aria-label="Clear search"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+
+        {searchResults !== null ? (
+          <Card>
+            <CardContent className="p-0">
+              <div className="px-4 py-2 text-sm text-muted-foreground border-b">
+                {searchResults.length} result{searchResults.length === 1 ? "" : "s"} for "{query}"
+              </div>
+              {searchResults.length === 0 ? (
+                <div className="text-center text-muted-foreground py-10">No bills match your search.</div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Bill No</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Customer</TableHead>
+                      <TableHead className="text-right">Birds</TableHead>
+                      <TableHead className="text-right">Weight</TableHead>
+                      <TableHead className="text-right">Rate</TableHead>
+                      <TableHead className="text-right">Amount</TableHead>
+                      <TableHead className="text-right">Balance</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {searchResults.map((b: any) => (
+                      <TableRow key={b.id}>
+                        <TableCell>
+                          <Link to="/app/bills/$billId" params={{ billId: String(b.id) }} className="font-medium hover:underline">
+                            #{b.bill_no}
+                          </Link>
+                        </TableCell>
+                        <TableCell>{fmtDate(b.date)}</TableCell>
+                        <TableCell>{b.customer_name}</TableCell>
+                        <TableCell className="text-right">{fmtInt(b.total_birds)}</TableCell>
+                        <TableCell className="text-right">{fmt(b.total_weight)}</TableCell>
+                        <TableCell className="text-right">{fmt(b.rate)}</TableCell>
+                        <TableCell className="text-right">{fmtMoney(b.amount)}</TableCell>
+                        <TableCell className="text-right font-medium">{fmtMoney(b.baki)}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        ) : (
+        <>
         <div className="flex flex-wrap items-center gap-2 text-sm">
           {crumbs.map((c, i) => (
             <span key={i} className="flex items-center gap-2">
@@ -214,6 +294,8 @@ function ArchivePage() {
               </Table>
             </CardContent>
           </Card>
+        )}
+        </>
         )}
       </div>
     </div>
