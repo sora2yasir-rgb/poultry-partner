@@ -19,7 +19,7 @@ import {
   runRegisterDailyPdfIfDue,
 } from "@/lib/registerBackup";
 import { toast } from "sonner";
-import { FileText, CalendarClock } from "lucide-react";
+import { FileText, CalendarClock, Eye, EyeOff, RefreshCw } from "lucide-react";
 
 export const Route = createFileRoute("/app/register")({
   head: () => ({
@@ -36,10 +36,55 @@ function RegisterPage() {
   const [autoOn, setAutoOn] = useState(false);
   const [lastAutoAt, setLastAutoAt] = useState<string | null>(null);
   const [downloading, setDownloading] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewEmpty, setPreviewEmpty] = useState(false);
 
   useEffect(() => {
     setAutoOn(isRegisterAutoEnabled());
     setLastAutoAt(getRegisterLastAt());
+  }, []);
+
+  async function buildPreview() {
+    setPreviewLoading(true);
+    setPreviewEmpty(false);
+    try {
+      const report = await buildRegisterReport(date);
+      if (report.rows.length === 0) {
+        setPreviewEmpty(true);
+        if (previewUrl) {
+          URL.revokeObjectURL(previewUrl);
+          setPreviewUrl(null);
+        }
+        return;
+      }
+      const bytes = await registerToPdf(report);
+      const blob = new Blob([bytes.buffer as ArrayBuffer], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+      setPreviewUrl((prev) => {
+        if (prev) URL.revokeObjectURL(prev);
+        return url;
+      });
+    } catch (e) {
+      console.error(e);
+      toast.error("Could not build preview");
+    } finally {
+      setPreviewLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (!previewOpen) return;
+    buildPreview();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [previewOpen, date]);
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function toggleAuto(on: boolean) {
