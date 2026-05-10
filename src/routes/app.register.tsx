@@ -19,7 +19,7 @@ import {
   runRegisterDailyPdfIfDue,
 } from "@/lib/registerBackup";
 import { toast } from "sonner";
-import { FileText, CalendarClock } from "lucide-react";
+import { FileText, CalendarClock, Eye, EyeOff, RefreshCw } from "lucide-react";
 
 export const Route = createFileRoute("/app/register")({
   head: () => ({
@@ -36,10 +36,55 @@ function RegisterPage() {
   const [autoOn, setAutoOn] = useState(false);
   const [lastAutoAt, setLastAutoAt] = useState<string | null>(null);
   const [downloading, setDownloading] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewEmpty, setPreviewEmpty] = useState(false);
 
   useEffect(() => {
     setAutoOn(isRegisterAutoEnabled());
     setLastAutoAt(getRegisterLastAt());
+  }, []);
+
+  async function buildPreview() {
+    setPreviewLoading(true);
+    setPreviewEmpty(false);
+    try {
+      const report = await buildRegisterReport(date);
+      if (report.rows.length === 0) {
+        setPreviewEmpty(true);
+        if (previewUrl) {
+          URL.revokeObjectURL(previewUrl);
+          setPreviewUrl(null);
+        }
+        return;
+      }
+      const bytes = await registerToPdf(report);
+      const blob = new Blob([bytes.buffer as ArrayBuffer], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+      setPreviewUrl((prev) => {
+        if (prev) URL.revokeObjectURL(prev);
+        return url;
+      });
+    } catch (e) {
+      console.error(e);
+      toast.error("Could not build preview");
+    } finally {
+      setPreviewLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (!previewOpen) return;
+    buildPreview();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [previewOpen, date]);
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function toggleAuto(on: boolean) {
@@ -151,6 +196,10 @@ function RegisterPage() {
           <div className="flex items-center gap-2">
             <Label htmlFor="date" className="text-sm">Date</Label>
             <Input id="date" type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-44" />
+            <Button variant="outline" onClick={() => setPreviewOpen((v) => !v)}>
+              {previewOpen ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              {previewOpen ? "Hide preview" : "Preview PDF"}
+            </Button>
             <Button variant="outline" onClick={() => downloadPdf(false)} disabled={downloading}>
               <FileText className="h-4 w-4" />
               Download PDF
@@ -159,6 +208,42 @@ function RegisterPage() {
         }
       />
       <div className="p-6 space-y-4">
+        {previewOpen && (
+          <Card>
+            <CardContent className="p-4 space-y-3">
+              <div className="flex items-center justify-between gap-2">
+                <div>
+                  <div className="text-sm font-medium">PDF preview — {fmtDate(date)}</div>
+                  <div className="text-xs text-muted-foreground">
+                    Live preview of the Daily Register PDF before download or auto-save.
+                  </div>
+                </div>
+                <Button size="sm" variant="ghost" onClick={buildPreview} disabled={previewLoading}>
+                  <RefreshCw className={"h-4 w-4 " + (previewLoading ? "animate-spin" : "")} />
+                  Refresh
+                </Button>
+              </div>
+              {previewLoading && (
+                <div className="h-[600px] flex items-center justify-center text-sm text-muted-foreground border rounded-md">
+                  Generating preview…
+                </div>
+              )}
+              {!previewLoading && previewEmpty && (
+                <div className="h-[200px] flex items-center justify-center text-sm text-muted-foreground border rounded-md">
+                  No bills or payments for this date.
+                </div>
+              )}
+              {!previewLoading && !previewEmpty && previewUrl && (
+                <iframe
+                  title="Daily Register PDF preview"
+                  src={previewUrl}
+                  className="w-full h-[600px] border rounded-md bg-muted"
+                />
+              )}
+            </CardContent>
+          </Card>
+        )}
+
         <Card>
           <CardContent className="p-4">
             <div className="flex flex-wrap items-start justify-between gap-3">
