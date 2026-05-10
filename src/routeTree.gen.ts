@@ -19,6 +19,7 @@ import { Route as AppDcRouteImport } from './routes/app.dc'
 import { Route as AppCustomersRouteImport } from './routes/app.customers'
 import { Route as AppBillsRouteImport } from './routes/app.bills'
 import { Route as AppDcDcIdRouteImport } from './routes/app.dc.$dcId'
+import { Route as AppBillsArchiveRouteImport } from './routes/app.bills.archive'
 import { Route as AppBillsBillIdRouteImport } from './routes/app.bills.$billId'
 
 const AppRoute = AppRouteImport.update({
@@ -71,6 +72,11 @@ const AppDcDcIdRoute = AppDcDcIdRouteImport.update({
   path: '/$dcId',
   getParentRoute: () => AppDcRoute,
 } as any)
+const AppBillsArchiveRoute = AppBillsArchiveRouteImport.update({
+  id: '/archive',
+  path: '/archive',
+  getParentRoute: () => AppBillsRoute,
+} as any)
 const AppBillsBillIdRoute = AppBillsBillIdRouteImport.update({
   id: '/$billId',
   path: '/$billId',
@@ -88,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/app/reports': typeof AppReportsRoute
   '/app/': typeof AppIndexRoute
   '/app/bills/$billId': typeof AppBillsBillIdRoute
+  '/app/bills/archive': typeof AppBillsArchiveRoute
   '/app/dc/$dcId': typeof AppDcDcIdRoute
 }
 export interface FileRoutesByTo {
@@ -100,6 +107,7 @@ export interface FileRoutesByTo {
   '/app/reports': typeof AppReportsRoute
   '/app': typeof AppIndexRoute
   '/app/bills/$billId': typeof AppBillsBillIdRoute
+  '/app/bills/archive': typeof AppBillsArchiveRoute
   '/app/dc/$dcId': typeof AppDcDcIdRoute
 }
 export interface FileRoutesById {
@@ -114,6 +122,7 @@ export interface FileRoutesById {
   '/app/reports': typeof AppReportsRoute
   '/app/': typeof AppIndexRoute
   '/app/bills/$billId': typeof AppBillsBillIdRoute
+  '/app/bills/archive': typeof AppBillsArchiveRoute
   '/app/dc/$dcId': typeof AppDcDcIdRoute
 }
 export interface FileRouteTypes {
@@ -129,6 +138,7 @@ export interface FileRouteTypes {
     | '/app/reports'
     | '/app/'
     | '/app/bills/$billId'
+    | '/app/bills/archive'
     | '/app/dc/$dcId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -141,6 +151,7 @@ export interface FileRouteTypes {
     | '/app/reports'
     | '/app'
     | '/app/bills/$billId'
+    | '/app/bills/archive'
     | '/app/dc/$dcId'
   id:
     | '__root__'
@@ -154,6 +165,7 @@ export interface FileRouteTypes {
     | '/app/reports'
     | '/app/'
     | '/app/bills/$billId'
+    | '/app/bills/archive'
     | '/app/dc/$dcId'
   fileRoutesById: FileRoutesById
 }
@@ -234,6 +246,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDcDcIdRouteImport
       parentRoute: typeof AppDcRoute
     }
+    '/app/bills/archive': {
+      id: '/app/bills/archive'
+      path: '/archive'
+      fullPath: '/app/bills/archive'
+      preLoaderRoute: typeof AppBillsArchiveRouteImport
+      parentRoute: typeof AppBillsRoute
+    }
     '/app/bills/$billId': {
       id: '/app/bills/$billId'
       path: '/$billId'
@@ -246,10 +265,12 @@ declare module '@tanstack/react-router' {
 
 interface AppBillsRouteChildren {
   AppBillsBillIdRoute: typeof AppBillsBillIdRoute
+  AppBillsArchiveRoute: typeof AppBillsArchiveRoute
 }
 
 const AppBillsRouteChildren: AppBillsRouteChildren = {
   AppBillsBillIdRoute: AppBillsBillIdRoute,
+  AppBillsArchiveRoute: AppBillsArchiveRoute,
 }
 
 const AppBillsRouteWithChildren = AppBillsRoute._addFileChildren(

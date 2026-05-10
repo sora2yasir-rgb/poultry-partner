@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { fmt, fmtInt, fmtMoney, fmtDate } from "@/lib/format";
-import { Receipt, Share2 } from "lucide-react";
+import { Receipt, Share2, FolderOpen } from "lucide-react";
 import { shareOnWhatsApp } from "@/lib/billPdf";
 import { toast } from "sonner";
 import type { Bill } from "@/lib/db";
@@ -37,7 +37,18 @@ function BillsPage() {
 
   return (
     <div>
-      <PageHeader title="Bills" description="All generated bills" />
+      <PageHeader
+        title="Bills"
+        description="All generated bills"
+        actions={
+          <Button asChild variant="outline" size="sm">
+            <Link to="/app/bills/archive">
+              <FolderOpen className="h-4 w-4" />
+              Archive (Year/Month/Day)
+            </Link>
+          </Button>
+        }
+      />
       <div className="p-6">
         <Card>
           <CardContent className="p-0">
